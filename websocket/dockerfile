@@ -1,0 +1,3 @@
+FROM node:latest
+
+COPY source/ /usr/src/app
