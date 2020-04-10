@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+    backend:
+        build: ./backend
+    database:
+        build: ./database
+        volumes:
+            - db-data:/var/lib/mysql
+    frontend:
+        build: ./frontend
+        ports:
+            - "8080:80"
+    websocket:
+        build: ./websocket
+volumes:
+    db-data:
