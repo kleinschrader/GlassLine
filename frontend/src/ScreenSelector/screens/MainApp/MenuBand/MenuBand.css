@@ -1,0 +1,10 @@
+.MenuBand {
+    width: 100%;
+    height: 5rem;
+    background-color: rgb(43, 43, 43);
+    display: flex;
+}
+
+.MenuBand .spacer {
+    flex-grow: 1;
+}
