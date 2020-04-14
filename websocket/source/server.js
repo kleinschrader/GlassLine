@@ -1,5 +1,12 @@
 const WebSocket = require('ws');
-const db_functions = require('./dbqueryfunctions.js')
+const mysql = require('mysql')
+
+var db = mysql.createConnection({
+  host     : 'database',
+  user     : 'db_user_gl',
+  password : 'passwd12',
+  database : 'glassline'
+});
 
 
 class wsConnection {
@@ -14,28 +21,26 @@ class wsConnection {
 
     bindFunctions()
     {
-        this.handleConnection = this.handleConnection.bind(this)
+      this.handleConnection = this.handleConnection.bind(this)
+      this.checkTokenLoginCallback = this.checkTokenLoginCallback.bind(this)
     }
 
     handleConnection(data) {
       try
       {
         //to keep the connection alive empty packets are send, we dont need to do anything
-        if(data === null)
+        if(data === "")
         {
           return;
         }
 
-        let commandData = this.splitCommand(data);
+        let dataObject = JSON.parse(data);
 
-        switch(commandData.command) {
-            case 'CHECKTOKENLOGIN':
-                db_functions.checkTokenLogin(commandData.params,this.socket)
-                break;
-            
-            default:
-                this.socket.send("Unknown command.")
-                break;
+        switch(dataObject.cmd) {
+          case 'checkTokenLogin':
+            this.checkTokenLogin(dataObject);
+          case 'checkCredLogin':
+            this.checkCredLogin(dataObject);
         }
       }
       catch(e)
@@ -49,42 +54,59 @@ class wsConnection {
         console.log("")
       }
     }
+    // SECTION MainCommands
 
-    splitCommand(rawCommand) {
-        //creats an object to return
-        let retOBJ = new Object()
+    checkTokenLogin(data) {
+      if(data.token === null) {
+        this.checkTokenLoginCallback("INVALTOKEN",null,null,data.seq)
+        return;
+      }
 
-        //extracts the text before '&' aka the command
-        let matchCommandResult = rawCommand.match(/^([A-Z]+)/gm)
-        let matchRawParamResult = rawCommand.match(/&.+$/gm)[0]
+      let tmpCBVal = this.checkTokenLoginCallback
 
-        retOBJ.command = matchCommandResult[0]
+      if(data.token.length === 128) {
+        db.query('SELECT 1 FROM users WHERE resumeSessionCode = ?', [data.token], function(error, results, fields) {setTimeout(tmpCBVal,500,error, results, fields,data.seq)})
+        return;
+      }
 
-        
-        
-        //only get parameters if there are actually any...
-        if(matchRawParamResult)
-        {
-          //extracts each parameter with filtering for '&&'
-          let matchParamResult = matchRawParamResult.match(/(\&.+?[^&])(?!&&)(?=&|$)/gm)
-          
-          //remove the & and replace '&&' with '&'
-          for(let i = 0; i < matchParamResult.length; i++)
-          {
-              matchParamResult[i] = matchParamResult[i].substr(1).replace('&&','&')
-
-          }
-
-          //pass the param array to the function and return it
-          retOBJ.params = matchParamResult;
-        }
-        else
-        {
-          //create an array so we can check how manay paraeters there are even if there are none
-          retOBJ.params = [];
-        }
-        return retOBJ;
+      this.checkTokenLoginCallback("INVALTOKEN",null,null,data.seq)
+      return;
     }
+
+    checkTokenLoginCallback(error, results, fields, sequence) {
+      let returnObj = new Object();
+      returnObj.seq = sequence;
+      
+      if(error !== null) {
+        returnObj.successful = false;
+        this.socket.send(JSON.stringify(returnObj))
+      }
+
+      if(results.length !== 1) {
+        returnObj.successful = false;
+        this.socket.send(JSON.stringify(returnObj))
+      }
+    }
+
+    checkCredLogin(data) {
+      if(data.username === null || data.password === null || keepLoggedIn === null)
+      {
+        this.checkCredLoginCallback("INVALDATA",null,null,data.seq)
+        return;
+      }
+
+      let tmpCBVal = this.checkCredLoginCallback
+
+      // TODO : Implement Password Validation
+    }
+
+    checkCredLoginCallback(error, results, fields, sequence) {
+
+    }
+
+
+    // !SECTION
+
 
     socket = null
 }
