@@ -1,0 +1,26 @@
+.MenuItem {
+    height: 5rem;
+    border: none;
+    background-color: rgb(43, 43, 43);
+    color: #fff;
+    min-width: 5rem;
+    padding: 0;
+}
+
+.MenuItem.SelectedItem {
+    background-color: rgb(0, 107, 98);
+}
+
+.MenuItem i {
+    height: 3rem;
+    width: 3rem;
+    font-size: 3rem;
+}
+
+.MenuItem p {
+    margin: 0 1rem 0 1rem;
+}
+
+.MenuItem:hover {
+    background-color: rgb(129, 129, 129);
+}
