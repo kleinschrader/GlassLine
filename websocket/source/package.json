@@ -1,0 +1,16 @@
+{
+  "name": "glassline-websocket",
+  "version": "0.1",
+  "description": "Websocket Protocol for Glassline",
+  "author": "First Last <first.last@example.com>",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^4.0.1",
+    "express": "^4.16.1",
+    "mysql": "^2.18.1",
+    "ws": "^7.2.3"
+  }
+}

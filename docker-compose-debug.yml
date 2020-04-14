@@ -14,5 +14,7 @@ services:
             - "8080:80"
     websocket:
         build: ./websocket
+        volumes:
+            - ./websocket/source:/usr/src/app
 volumes:
     db-data:
