@@ -12,12 +12,13 @@
         exit();
     }
 
-    //set the header to respond via json
-    header('Content-Type: application/json');
-
     //starts the session
     session_start();
 
+
+    //set the header to respond via json
+    header('Content-Type: application/json');
+    
     //checks if the state is set, should it not be, we are obviusly not logged in...
     $loginStateSet = isset($_SESSION['loginState']);
 
@@ -27,7 +28,7 @@
 
     if($loginStateSet)
     {
-        $$loginStateObj->loginState = $_SESSION['loginState'];
+        $loginStateObj->loginState = $_SESSION['loginState'];
     }
 
     //send back the response
