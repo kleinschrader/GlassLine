@@ -22,10 +22,17 @@ class ScreenSelector extends React.Component {
 
     socketReady() {  
         let cookieMatch = document.cookie.match(/LOGINTOKEN=([A-Za-z0-9]+)/gm)
-        if(cookieMatch.length > 0)
+        if(cookieMatch != null)
         {
-            let checkTokenRequest = document.WSClient.checkTokenLogin(cookieMatch[0].split('=')[1])
-            checkTokenRequest.addEventListener('complete',this.completeTokenCheck)
+            if(cookieMatch.length > 0)
+            {
+                let checkTokenRequest = document.WSClient.checkTokenLogin(cookieMatch[0].split('=')[1])
+                checkTokenRequest.addEventListener('complete',this.completeTokenCheck)
+            }
+        }
+        else
+        {
+            this.setState({currentScreen : 'login'})
         }
     }
 
