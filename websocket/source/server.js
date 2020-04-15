@@ -195,55 +195,64 @@ class wsConnection {
    * @param {number} sequence - The original sequence
    */
   checkCredLoginCallback(error, results, fields, password,keepLoggedIn, sequence) {
-    //compare the provided password with out saved hash
-    let passwordOk = (bcrypt.compareSync(password,results[0].passwd))
-
-    //create the return object and save the sequence and if the login was in the object
+    
     let returnObj = new Object;
     returnObj.seq = sequence;
-    returnObj.successful = passwordOk;
 
-    //this code should only run if the user is authenticated and the keep logged in flag is off
-    if(passwordOk && keepLoggedIn)
+    if(error === null && results.length === 1)
     {
-      let today = new Date();
+      //compare the provided password with out saved hash
+      let passwordOk = (bcrypt.compareSync(password,results[0].passwd))
 
-      //this code runs if the resume session code is not set or expired
-      if(results[0].resumeSessionCode == null || results[0].resumeSessionCodeSpoil < today) {
-        
-        //generate a new 128 byte token
-        let newKey = ""
-        for(let i = 0; i < 128; i++)
-        {
-          newKey = newKey + b62alphabet[Math.floor(Math.random() * 62)]
-        }
+      //create the return object and save the sequence and if the login was in the object
+      returnObj.successful = passwordOk;
 
-        //set a new spoil date 16 days in the future
-        let spoilDate = new Date();
-        spoilDate.setDate(spoilDate.getDate() + 16)
-
-        //update the session code and spoil date in the database
-        db.query('UPDATE users SET resumeSessionCode = ?,resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [newKey,spoilDate,results[0].userid])
-
-        //set the token in the return object
-        returnObj.token = newKey
-      }
-      else
+      //this code should only run if the user is authenticated and the keep logged in flag is off
+      if(passwordOk && keepLoggedIn)
       {
-        //set a new spoil date 16 days in the future
-        let spoilDate = new Date();
-        spoilDate.setDate(spoilDate.getDate() + 16)
+        let today = new Date();
 
-        //update the spoil date
-        db.query('UPDATE users SET resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [spoilDate,results[0].userid])
+        //this code runs if the resume session code is not set or expired
+        if(results[0].resumeSessionCode == null || results[0].resumeSessionCodeSpoil < today) {
+          
+          //generate a new 128 byte token
+          let newKey = ""
+          for(let i = 0; i < 128; i++)
+          {
+            newKey = newKey + b62alphabet[Math.floor(Math.random() * 62)]
+          }
 
-        //set the token in the return object
-        returnObj.token = results[0].resumeSessionCode
+          //set a new spoil date 16 days in the future
+          let spoilDate = new Date();
+          spoilDate.setDate(spoilDate.getDate() + 16)
+
+          //update the session code and spoil date in the database
+          db.query('UPDATE users SET resumeSessionCode = ?,resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [newKey,spoilDate,results[0].userid])
+
+          //set the token in the return object
+          returnObj.token = newKey
+        }
+        else
+        {
+          //set a new spoil date 16 days in the future
+          let spoilDate = new Date();
+          spoilDate.setDate(spoilDate.getDate() + 16)
+
+          //update the spoil date
+          db.query('UPDATE users SET resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [spoilDate,results[0].userid])
+
+          //set the token in the return object
+          returnObj.token = results[0].resumeSessionCode
+        }
       }
-    }
+      
+      //save the uuid in the current session
+      this.uuid = results[0].userid
 
-    //save the uuid in the current session
-    this.uuid = results[0].userid
+    }
+    else {
+      returnObj.successful = false;
+    }
 
     //send back the data via the websocket
     this.socket.send(JSON.stringify(returnObj))
