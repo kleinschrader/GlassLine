@@ -1,7 +1,4 @@
 import React from 'react';
-import axios from 'axios';
-
-import config from './../../../config.json';
 
 import './LoginScreen.css';
 
@@ -20,24 +17,19 @@ class LoginScreen extends React.Component {
     startLogin(e) {
         e.preventDefault();
 
-        let sendObject = Object()
-
-        sendObject.username = e.target.username.value
-        sendObject.password = e.target.password.value
-        sendObject.keepLoggedIn = e.target.keepLoggedIn.checked
-
-        let request = axios.post(config.server + 'api/sessionapi/loginCred.php', sendObject, { withCredentials: true })
-        request.then(this.handleCompleteLogin)
+        let checkCredRequest = document.WSClient.checkCredLogin(e.target.username.value,e.target.password.value,e.target.keepLoggedIn.checked)
+        checkCredRequest.addEventListener('complete',this.handleCompleteLogin)
     }
 
     handleCompleteLogin(r) {
-        if(r.data.state === "wrong_password")
+        console.log(r.detail.data.successful )
+        if(!r.detail.data.successful)
         {
             this.setState({displayWarning : true})
-            return
         }
         else
         {
+            console.log(r)
             let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : 'mainApp'}});
             document.dispatchEvent(screenEvent)
         }

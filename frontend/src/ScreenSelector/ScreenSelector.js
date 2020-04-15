@@ -1,7 +1,5 @@
 import React from 'react';
-import axios from 'axios';
 
-import config from './../config.json';
 
 import LoginScreen from './screens/LoginScreen';
 import MainApp from './screens/MainApp';
@@ -10,24 +8,33 @@ class ScreenSelector extends React.Component {
     constructor(props) {
         super(props)
 
-        this.completeLoginCheck = this.completeLoginCheck.bind(this)
+        this.completeTokenCheck = this.completeTokenCheck.bind(this)
         this.handleScreenChangeEvent = this.handleScreenChangeEvent.bind(this)
+        this.socketReady = this.socketReady.bind(this)
     }
     
     componentDidMount() {
         
         document.addEventListener('screenChange',this.handleScreenChangeEvent)
 
-        let request = axios.get(config.server + 'api/sessionapi/loginState.php',{ withCredentials: true })
-        request.then(this.completeLoginCheck)
+        document.WSClient.addEventListener('open',this.socketReady)
+    }
+
+    socketReady() {  
+        let cookieMatch = document.cookie.match(/LOGINTOKEN=([A-Za-z0-9]+)/gm)
+        if(cookieMatch.length > 0)
+        {
+            let checkTokenRequest = document.WSClient.checkTokenLogin(cookieMatch[0].split('=')[1])
+            checkTokenRequest.addEventListener('complete',this.completeTokenCheck)
+        }
     }
 
     handleScreenChangeEvent(e) {
         this.setState({currentScreen : e.detail.newScreen})
     }
 
-    completeLoginCheck(response) {
-        if(response.data.loginState) {
+    completeTokenCheck(response) {
+        if(response.detail.data.successful) {
             this.setState({currentScreen : 'mainApp'})
         }
         else
