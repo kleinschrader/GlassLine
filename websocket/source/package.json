@@ -1,6 +1,6 @@
 {
   "name": "glassline-websocket",
-  "version": "0.1",
+  "version": "1.0.0",
   "description": "Websocket Protocol for Glassline",
   "author": "First Last <first.last@example.com>",
   "main": "server.mjs",
