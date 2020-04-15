@@ -22,14 +22,19 @@ class LoginScreen extends React.Component {
     }
 
     handleCompleteLogin(r) {
-        console.log(r.detail.data.successful )
         if(!r.detail.data.successful)
         {
             this.setState({displayWarning : true})
         }
         else
         {
-            console.log(r)
+            if(r.detail.data.token != null)
+            {
+                let cookieExpiryDate = new Date();
+                cookieExpiryDate.setFullYear(cookieExpiryDate.getFullYear() + 1)
+                document.cookie = ("LOGINTOKEN=" + r.detail.data.token + ";expires=" + cookieExpiryDate.toUTCString())
+            }
+
             let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : 'mainApp'}});
             document.dispatchEvent(screenEvent)
         }
