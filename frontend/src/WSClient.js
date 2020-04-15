@@ -90,6 +90,14 @@ class WSClient extends EventTarget {
         return retObj;
     }
 
+    logoff() {
+        let requestObj = {};
+        requestObj.cmd = 'logoff';
+        requestObj.seq = this.genSeq();
+
+        this.socket.send(JSON.stringify(requestObj))
+    }
+
     socket = null
     openRequests = []
 }

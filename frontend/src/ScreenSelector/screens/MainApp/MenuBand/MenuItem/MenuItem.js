@@ -1,7 +1,4 @@
 import React from 'react';
-import axios from 'axios';
-
-import config from './../../../../../config.json'
 
 import './MenuItem.css';
 
@@ -16,7 +13,9 @@ class MenuItem extends React.Component {
     handleClick(){
         if(this.props.title === "Logoff")
         {
-            axios.post(config.server + 'api/sessionapi/logoff.php',null, { withCredentials: true })
+            document.cookie = "LOGINTOKEN= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+
+            document.WSClient.logoff()
 
             let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : 'login'}});
             document.dispatchEvent(screenEvent)

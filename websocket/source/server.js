@@ -67,6 +67,9 @@ class wsConnection {
         case 'checkCredLogin':
           this.checkCredLogin(dataObject);
           break;
+        case 'logoff':
+          this.logoff(dataObject);
+          break;
       }
     }
     catch(e)
@@ -258,9 +261,19 @@ class wsConnection {
     this.socket.send(JSON.stringify(returnObj))
   }
 
+  logoff(data) {
+    this.uuid = null
+
+    let retObj = new Object();
+    retObj.seq = data.seq;
+    retObj.successful = true;
+
+    this.socket.send(JSON.stringify(retObj))
+  }
 
   // !SECTION
 
+  // NOTE if adding a variable please also add a line to reset it to default in the logoff function
   uuid = null
   socket = null
 }
