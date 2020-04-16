@@ -7,13 +7,13 @@ let bcryptRounds = 10;
 
 let b62alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-//set up connection to the database
-var db = mysql.createConnection({
+//set up connection parameters to the database
+var dbparamas = {
   host     : 'database',
   user     : 'db_user_gl',
   password : 'passwd12',
   database : 'glassline'
-});
+};
 
 //a class that gets created if a ws is created
 //handles all commands, session managment etc
@@ -26,8 +26,14 @@ class wsConnection {
   {
       this.bindFunctions()
 
+      //set up connection to the database
+      this.db = mysql.createConnection(dbparamas)
+
+      this.db.on('error',this.onSQLDie)
+
       //makes it so the websocket is avalabile from this.socket
       this.socket = WebSocket
+      this.socket.addEventListener('close',this.onSocketDie)
 
       this.socket.on('message',this.handleConnection)
   }
@@ -40,6 +46,8 @@ class wsConnection {
     this.handleConnection = this.handleConnection.bind(this)
     this.checkTokenLoginCallback = this.checkTokenLoginCallback.bind(this)
     this.checkCredLoginCallback = this.checkCredLoginCallback.bind(this)
+    this.onSQLDie = this.onSQLDie.bind(this)
+    this.onSocketDie = this.onSocketDie.bind(this)
   }
 
   /** This is the main function to handle all data send to the server
@@ -109,7 +117,7 @@ class wsConnection {
     //only query the db if the length is correct, otherwise we dont need to buffer
     if(data.token.length === 128) {
       //just select the uuid from the user table where our session code matches and send everything to checkTokenLoginCallback
-      db.query('SELECT UuidFromBin(userid) AS userid,resumeSessionCodeSpoil FROM users WHERE resumeSessionCode = ?', [data.token], function(error, results, fields) {setTimeout(checkTokenLoginCallback,200,error, results, fields,data.seq)})
+      this.db.query('SELECT UuidFromBin(userid) AS userid,resumeSessionCodeSpoil FROM users WHERE resumeSessionCode = ?', [data.token], function(error, results, fields) {setTimeout(checkTokenLoginCallback,200,error, results, fields,data.seq)})
       return;
     }
     
@@ -132,6 +140,7 @@ class wsConnection {
     
     //if the error is not empty something went wrong and we just send back successful : false
     if(error !== null) {
+      console.log("SQL Connection error : " + error)
       returnObj.successful = false;
       this.socket.send(JSON.stringify(returnObj))
       return;
@@ -183,7 +192,7 @@ class wsConnection {
     let checkCredLoginCallback = this.checkCredLoginCallback
 
     //grab the uuid, the hashed password the token and the token expire and call the checkCredLoginCallback function with the results
-    db.query('SELECT UuidFromBin(userid) AS userid,passwd,resumeSessionCode,resumeSessionCodeSpoil FROM users WHERE username = ?', [data.username], function(error, results, fields){
+    this.db.query('SELECT UuidFromBin(userid) AS userid,passwd,resumeSessionCode,resumeSessionCodeSpoil FROM users WHERE username = ?', [data.username], function(error, results, fields){
       checkCredLoginCallback(error, results, fields, data.password, data.keepLoggedIn, data.seq)
     })
 
@@ -230,7 +239,7 @@ class wsConnection {
           spoilDate.setDate(spoilDate.getDate() + 16)
 
           //update the session code and spoil date in the database
-          db.query('UPDATE users SET resumeSessionCode = ?,resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [newKey,spoilDate,results[0].userid])
+          this.db.query('UPDATE users SET resumeSessionCode = ?,resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [newKey,spoilDate,results[0].userid])
 
           //set the token in the return object
           returnObj.token = newKey
@@ -242,7 +251,7 @@ class wsConnection {
           spoilDate.setDate(spoilDate.getDate() + 16)
 
           //update the spoil date
-          db.query('UPDATE users SET resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [spoilDate,results[0].userid])
+          this.db.query('UPDATE users SET resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [spoilDate,results[0].userid])
 
           //set the token in the return object
           returnObj.token = results[0].resumeSessionCode
@@ -254,6 +263,10 @@ class wsConnection {
 
     }
     else {
+      if(error !== null)
+      {
+        console.log("SQL Connection error : " + error)
+      }
       returnObj.successful = false;
     }
 
@@ -261,6 +274,25 @@ class wsConnection {
     this.socket.send(JSON.stringify(returnObj))
   }
 
+  onSQLDie(error) {
+    console.log("DB Closed.")
+
+    this.onSocketDie = function(){}
+
+    this.socket.close()
+  }
+
+  onSocketDie(error) {
+    console.log("WebSocket Closed.")
+
+    this.onSQLDie = function(){}
+
+    this.db.end()
+  }
+
+  /** This function will reset all stored variables in the websocket, resetting the session
+   * @param {*} data 
+   */
   logoff(data) {
     this.uuid = null
 
@@ -276,6 +308,7 @@ class wsConnection {
   // NOTE if adding a variable please also add a line to reset it to default in the logoff function
   uuid = null
   socket = null
+  db = null
 }
 
 const ws = new WebSocket.Server({
