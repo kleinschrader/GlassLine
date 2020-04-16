@@ -1,0 +1,24 @@
+.ConnectionLostScreen {
+    background-color: rgb(66, 66, 66);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.ConnectionLostScreen i {
+    font-size: 7rem;
+    color: yellow;
+}
+
+.ConnectionLostScreen h2 {
+    color: #fff;
+    margin: 0;
+}
+
+.ConnectionLostScreen h4 {
+    color: rgb(109, 109, 109);
+    margin: 0;
+}

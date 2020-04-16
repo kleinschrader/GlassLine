@@ -12,6 +12,10 @@ class App extends React.Component {
     if(document.WSClient == null)
     {
       document.WSClient = new WSClient();
+      document.WSClient.addEventListener('close',function(){
+        let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : 'connectionLost'}});
+        document.dispatchEvent(screenEvent)
+      })
     }
   }
 

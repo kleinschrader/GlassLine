@@ -11,16 +11,23 @@ class WSClient extends EventTarget {
         this.onMessgage = this.onMessgage.bind(this)
         this.onOpen = this.onOpen.bind(this)
         this.keepAlive = this.keepAlive.bind(this)
+        this.onClose = this.onClose.bind(this)
 
         this.socket = new WebSocket(config.server, "glasslinews")
         this.socket.addEventListener('open',this.onOpen)
         this.socket.addEventListener('message',this.onMessgage)
+        this.socket.addEventListener('close',this.onClose)
     }
 
     onOpen() {
         setInterval(this.keepAlive,15000)
 
         let event = new CustomEvent('open')
+        this.dispatchEvent(event)
+    }
+
+    onClose() {
+        let event = new CustomEvent('close')
         this.dispatchEvent(event)
     }
 

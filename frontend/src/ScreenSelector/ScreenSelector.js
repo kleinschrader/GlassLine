@@ -3,6 +3,7 @@ import React from 'react';
 
 import LoginScreen from './screens/LoginScreen';
 import MainApp from './screens/MainApp';
+import ConnectionLostScreen from './screens/ConnectionLostScreen';
 
 class ScreenSelector extends React.Component {
     constructor(props) {
@@ -68,6 +69,10 @@ class ScreenSelector extends React.Component {
             case 'mainApp':
                 return(
                     <MainApp />
+                )
+            case 'connectionLost':
+                return(
+                    <ConnectionLostScreen />
                 )
             default:
                 return(
