@@ -24,3 +24,54 @@
 .MenuItem:hover {
     background-color: rgb(129, 129, 129);
 }
+
+.MenuItem.HamburgerMenu {
+    display: none;
+}
+
+@media only screen and (max-width: 700px) {
+    .MenuItem {
+        height: 3rem;
+        text-align: left;
+        display: flex;
+    }
+
+    .MenuItem.HamburgerMenu {
+        display: flex;
+    }
+
+    .MenuItem:hover {
+        background-color: rgb(0, 107, 98);
+    }
+
+    .MenuItem.HamburgerMenu:hover {
+        background-color: rgb(43, 43, 43);
+    }
+
+    .MenuBand.hamburgerRetracted> .MenuItem {
+        display: none;
+    }
+
+    .MenuBand.hamburgerRetracted> .MenuItem.HamburgerMenu {
+        display: flex;
+        flex-direction: row-reverse;
+    }
+
+    .MenuItem.MenuItem.HamburgerMenu {
+        flex-direction: row-reverse;
+    }
+
+    .MenuItem i {
+        height: 2.5rem;
+        width: 2.5rem;
+        font-size: 2.5rem;
+        line-height: 3rem;
+        margin-left: 2rem;
+    }
+
+
+    .MenuItem p {
+        margin: 0 0 0 1rem;
+        line-height: 3rem;
+    }
+}

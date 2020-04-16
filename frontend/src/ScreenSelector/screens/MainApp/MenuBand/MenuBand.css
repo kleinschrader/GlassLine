@@ -8,3 +8,15 @@
 .MenuBand .spacer {
     flex-grow: 1;
 }
+
+
+@media only screen and (max-width: 700px) {
+    .MenuBand {
+        height: 100vh;
+        flex-direction: column;
+    }
+
+    .MenuBand.hamburgerRetracted {
+        height: unset;
+    }
+}

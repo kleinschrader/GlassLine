@@ -11,6 +11,11 @@ class MenuItem extends React.Component {
     }
 
     handleClick(){
+        if(this.props.clickCallback)
+        {
+            this.props.clickCallback()
+        }
+
         if(this.props.title === "Logoff")
         {
             document.cookie = "LOGINTOKEN= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
@@ -31,9 +36,23 @@ class MenuItem extends React.Component {
         document.dispatchEvent(event)
     }
 
+    buildClassName() {
+        let classNameRet = "MenuItem"
+        if(this.props.selected)
+        {
+            classNameRet = classNameRet + " SelectedItem"
+        }
+        else if(this.props.title == "Menu")
+        {
+            classNameRet = classNameRet + " HamburgerMenu"
+        }
+
+        return classNameRet;
+    }
+
     render() {
         return(
-            <button className={this.props.selected ? "MenuItem SelectedItem" : "MenuItem"} onClick={this.handleClick}>
+            <button className={this.buildClassName()} onClick={this.handleClick}>
                 <i className={this.props.iconClass}></i>
                 <p>{this.props.title}</p>
             </button>

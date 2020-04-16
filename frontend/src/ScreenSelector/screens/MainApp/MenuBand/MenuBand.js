@@ -10,6 +10,7 @@ class MenuBand extends React.Component {
 
         this.componentDidMount = this.componentDidMount.bind(this);
         this.handleSubScreenChangeEvent = this.handleSubScreenChangeEvent.bind(this);
+        this.handleMenuToggle = this.handleMenuToggle.bind(this)
     }
 
     componentDidMount() {
@@ -22,12 +23,25 @@ class MenuBand extends React.Component {
     }
 
     state = {
-        subScreen : 'home'
+        subScreen : 'home',
+        menuState : 'hamburgerRetracted'
+    }
+
+    handleMenuToggle() {
+        if(this.state.menuState === 'hamburgerRetracted')
+        {
+            this.setState({menuState : ''})
+        }
+        else
+        {
+            this.setState({menuState : 'hamburgerRetracted'})
+        }
     }
 
     render() {
         return(
-            <div className="MenuBand">
+            <div className={'MenuBand ' + this.state.menuState}>
+                <MenuItem title="Menu" iconClass="fas fa-bars" clickCallback={this.handleMenuToggle} />
                 <MenuItem newSubscreen='home' title="Home" iconClass="fas fa-laptop-house" selected={this.state.subScreen === 'home'} />
                 <MenuItem newSubscreen='server' title="Server" iconClass="fas fa-server" selected={this.state.subScreen === 'server'}  />
                 <MenuItem newSubscreen='services' title="Services" iconClass="fas fa-cog" selected={this.state.subScreen === 'services'}  />

@@ -10,6 +10,8 @@ class MainApp extends React.Component {
         return (
             <div className="MainApp">
                 <MenuBand />
+                <div className="subbody"></div>
+                <div className="footer"></div>
             </div>
         )
     }
