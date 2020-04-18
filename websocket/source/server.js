@@ -49,6 +49,9 @@ class wsConnection {
     this.onSQLDie = this.onSQLDie.bind(this)
     this.onSocketDie = this.onSocketDie.bind(this)
     this.onDBConnection = this.onDBConnection.bind(this)
+    this.getTenantsCallback = this.getTenantsCallback.bind(this)
+    this.getTenantServerCallback = this.getTenantServerCallback.bind(this)
+    this.genericSuccessfulReturn = this.genericSuccessfulReturn.bind(this)
   }
 
   onDBConnection(err, connection) {
@@ -90,6 +93,14 @@ class wsConnection {
         case 'logoff':
           this.logoff(dataObject);
           break;
+        case 'getTenants':
+          this.getTenants(dataObject);
+        case 'getTenantServer':
+          this.getTenantServer(dataObject);
+          break;
+        case 'createServer':
+          this.createServer(dataObject)
+          break;
       }
     }
     catch(e)
@@ -129,7 +140,8 @@ class wsConnection {
     //only query the db if the length is correct, otherwise we dont need to buffer
     if(data.token.length === 128) {
       //just select the uuid from the user table where our session code matches and send everything to checkTokenLoginCallback
-      this.db.query('SELECT UuidFromBin(userid) AS userid,resumeSessionCodeSpoil FROM users WHERE resumeSessionCode = ?', [data.token], function(error, results, fields) {setTimeout(checkTokenLoginCallback,200,error, results, fields,data.seq)})
+      this.db.query('SELECT UuidFromBin(userid) AS userid, resumeSessionCodeSpoil, UuidFromBin(tenant) AS tenant, tenants.globalAdmin AS adminTenant FROM users LEFT JOIN tenants ON users.tenant = tenants.tenantid WHERE resumeSessionCode = ?', [data.token], function(error, results, fields) {setTimeout(checkTokenLoginCallback,200,error, results, fields,data.seq)})
+
       return;
     }
     
@@ -149,7 +161,7 @@ class wsConnection {
     let returnObj = new Object();
     //already place the sequence in the object
     returnObj.seq = sequence;
-    
+  
     //if the error is not empty something went wrong and we just send back successful : false
     if(error !== null) {
       console.log("SQL Connection error : " + error)
@@ -176,6 +188,8 @@ class wsConnection {
 
     //save the uuid in the current session
     this.uuid = results[0].userid
+    this.tenant = results[0].tenant
+    this.adminTenant = results[0].adminTenant
 
     //any faliure condition is handled, if the code reaches this postion we will send back that the login was successful
     returnObj.successful = true;
@@ -204,7 +218,7 @@ class wsConnection {
     let checkCredLoginCallback = this.checkCredLoginCallback
 
     //grab the uuid, the hashed password the token and the token expire and call the checkCredLoginCallback function with the results
-    this.db.query('SELECT UuidFromBin(userid) AS userid,passwd,resumeSessionCode,resumeSessionCodeSpoil FROM users WHERE username = ?', [data.username], function(error, results, fields){
+    this.db.query('SELECT UuidFromBin(userid) AS userid,passwd,resumeSessionCode,resumeSessionCodeSpoil,UuidFromBin(tenant) AS tenant, tenants.globalAdmin AS adminTenant FROM users LEFT JOIN tenants ON users.tenant = tenants.tenantid WHERE username = ?', [data.username], function(error, results, fields){
       checkCredLoginCallback(error, results, fields, data.password, data.keepLoggedIn, data.seq)
     })
 
@@ -252,7 +266,6 @@ class wsConnection {
 
           //update the session code and spoil date in the database
           this.db.query('UPDATE users SET resumeSessionCode = ?,resumeSessionCodeSpoil = ? WHERE userid = UuidToBin(?)', [newKey,spoilDate,results[0].userid])
-
           //set the token in the return object
           returnObj.token = newKey
         }
@@ -272,6 +285,8 @@ class wsConnection {
       
       //save the uuid in the current session
       this.uuid = results[0].userid
+      this.tenant = results[0].tenant
+      this.adminTenant = results[0].adminTenant
 
     }
     else {
@@ -283,6 +298,119 @@ class wsConnection {
     }
 
     //send back the data via the websocket
+    this.socket.send(JSON.stringify(returnObj))
+  }
+
+  getTenants(data) {
+    //disallow non authenticated users to run this command, 
+    if(this.uuid === null) {
+      this.getTenantsCallback("NONAUTH","","",data.seq)
+      return
+    }
+
+    if(!this.adminTenant) {
+      this.getTenantsCallback("NONAUTH","","",data.seq)
+      return
+    }
+
+    let getTenantsCallback = this.getTenantsCallback
+
+    this.db.query("SELECT UuidFromBin(tenantid) AS tenantid, tenantname FROM tenants", function(error, results, fields) {getTenantsCallback(error, results, fields, data.seq)})
+  }
+
+  getTenantsCallback(error, results, fields, sequence) {
+    let returnObj = new Object;
+    returnObj.seq = sequence;
+    
+    if(error === null)
+    {
+      returnObj.tenants = []
+      for(let i = 0; i < results.length; i++)
+      {
+        returnObj.tenants[i] = new Object;
+        returnObj.tenants[i].id = results[i].tenantid
+        returnObj.tenants[i].name = results[i].tenantname
+      }
+    }
+    else
+    {
+      returnObj.tenants = false
+    }
+
+    this.socket.send(JSON.stringify(returnObj))
+  }
+
+  getTenantServer(data) {
+    if(this.uuid === null) {
+      this.getTenantServerCallback("NONAUTH","","",data.seq)
+      return
+    }
+
+    if(!this.adminTenant) {
+      this.getTenantServerCallback("NONAUTH","","",data.seq)
+      return
+    }
+
+    let getTenantServerCallback = this.getTenantServerCallback
+
+    this.db.query("SELECT UuidFromBin(serverid) AS serverid, servername FROM servers WHERE tenant = (UuidToBin(?))", [data.tenant],function(error, results, fields) {getTenantServerCallback(error, results, fields,data.seq)})
+  }
+
+  getTenantServerCallback(error, results, fields, sequence) {
+    let returnObj = new Object;
+    returnObj.seq = sequence;
+    
+    if(error === null)
+    {
+      returnObj.server = []
+
+
+      for(let i = 0; i < results.length; i++) {
+        returnObj.server[i] = {}
+        returnObj.server[i].id = results[i].serverid
+        returnObj.server[i].name = results[i].servername
+      }
+    }
+    else
+    {
+      console.trace(error)
+      returnObj.server = false;
+    }
+
+    this.socket.send(JSON.stringify(returnObj))
+  }
+
+  createServer(data) {
+    if(this.uuid === null) {
+      this.getTenantServerCallback("NONAUTH","","",data.seq)
+      return
+    }
+
+    let tenantToSet = this.adminTenant ? data.tenant : this.tenant
+
+    let accessToken = ""
+
+    for(let i = 0; i < 64; i++) {
+      accessToken += b62alphabet[Math.floor(Math.random() * b62alphabet.length)]
+    }
+
+    let genericSuccessfulReturn = this.genericSuccessfulReturn
+    this.db.query("INSERT INTO servers(serverid,servername,accessToken,childOf,tenant) VALUES (UuidToBin(UUID()), ?, ?, (UuidToBin(?)),(UuidToBin(?)))",[data.servername,accessToken,data.parent,tenantToSet], function(error, results, fields) {genericSuccessfulReturn(error, results, fields, data.seq)})
+
+  }
+
+  genericSuccessfulReturn(error, results, fields, sequence) {
+    let returnObj = new Object;
+    returnObj.seq = sequence;
+
+    if(error === null) {
+      returnObj.successful = true;
+    }
+    else {
+      console.trace("SQL OR GEN ERROR " + error)
+      returnObj.successful = false;
+    }
+
     this.socket.send(JSON.stringify(returnObj))
   }
 
@@ -335,6 +463,8 @@ class wsConnection {
   uuid = null
   socket = null
   db = null
+  tenant = null
+  adminTenant = false
 }
 
 const ws = new WebSocket.Server({
