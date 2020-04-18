@@ -8,14 +8,14 @@ class WSClient extends EventTarget {
     constructor(props) {
         super(props)
 
-        this.onMessgage = this.onMessgage.bind(this)
+        this.onMessage = this.onMessage.bind(this)
         this.onOpen = this.onOpen.bind(this)
         this.keepAlive = this.keepAlive.bind(this)
         this.onClose = this.onClose.bind(this)
 
         this.socket = new WebSocket(config.server, "glasslinews")
         this.socket.addEventListener('open',this.onOpen)
-        this.socket.addEventListener('message',this.onMessgage)
+        this.socket.addEventListener('message',this.onMessage)
         this.socket.addEventListener('close',this.onClose)
     }
 
@@ -35,7 +35,7 @@ class WSClient extends EventTarget {
         this.socket.send("")
     }
 
-    onMessgage(rawdata) {
+    onMessage(rawdata) {
         let data = JSON.parse(rawdata.data)
 
         let responseIndex = null;
@@ -95,6 +95,44 @@ class WSClient extends EventTarget {
         this.socket.send(JSON.stringify(requestObj))
 
         return retObj;
+    }
+
+    getTenants() {
+        let requestObj = {}
+        requestObj.cmd = 'getTenants';
+        requestObj.seq = this.genSeq();
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+        return retObj;
+    }
+
+    getTenantServer(tenant) {
+        let requestObj = {}
+        requestObj.cmd = 'getTenantServer';
+        requestObj.tenant = tenant
+        requestObj.seq = this.genSeq();
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+        return retObj;
+    }
+
+    createServer(servername, tenant, parent) {
+        let requestObj = {};
+        requestObj.cmd = 'createServer';
+        requestObj.seq = this.genSeq();
+        requestObj.servername = servername
+        requestObj.tenant = tenant
+        requestObj.parent = parent
+
+        this.socket.send(JSON.stringify(requestObj))
     }
 
     logoff() {
