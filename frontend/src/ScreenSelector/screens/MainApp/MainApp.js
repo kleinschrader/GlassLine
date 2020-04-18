@@ -3,6 +3,7 @@ import React from 'react';
 import './MainApp.css';
 
 import MenuBand from './MenuBand';
+import SubScreen from './SubScreen';
 
 class MainApp extends React.Component {
     
@@ -10,7 +11,7 @@ class MainApp extends React.Component {
         return (
             <div className="MainApp">
                 <MenuBand />
-                <div className="subbody"></div>
+                <SubScreen />
                 <div className="footer"></div>
             </div>
         )
