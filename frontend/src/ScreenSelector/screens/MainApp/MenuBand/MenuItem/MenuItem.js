@@ -16,6 +16,10 @@ class MenuItem extends React.Component {
             this.props.clickCallback()
         }
 
+        if(this.props.title === "Menu") {
+            return;
+        }
+
         if(this.props.title === "Logoff")
         {
             document.cookie = "LOGINTOKEN= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
