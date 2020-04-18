@@ -1,0 +1,66 @@
+.CreateServerForm {
+    width: 100%;
+}
+
+.CreateServerForm h3 {
+    margin: 0;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0 1rem 0;
+}
+
+.CreateServerForm label {
+    color: #fff;
+    width: calc(100% - 1rem);
+    display: block;
+    margin: 0 0 0 1rem;
+}
+
+.CreateServerForm input {
+    width: calc(100% - 2rem);
+    display: block;
+    margin: 0 0 1rem 1rem;
+    padding: 0;
+    background-color: rgb(85, 85, 85);
+    border: solid;
+    border-width: 1px;
+    border-color: #000;
+    color: #fff;
+    text-align: center;
+}
+
+
+.CreateServerForm select {
+    width: calc(100% - 2rem);
+    display: block;
+    margin: 0 0 1rem 1rem;
+    padding: 0;
+    background-color: rgb(85, 85, 85);
+    border: solid;
+    border-width: 1px;
+    border-color: #000;
+    color: #fff;
+    text-align: center;
+}
+
+.CreateServerForm select:disabled {
+    color: rgb(107, 105, 105);
+}
+
+.CreateServerForm input[type="submit"] {
+    background-color: rgb(0, 26, 104);
+}
+
+.DualInputSplitter {
+    display: flex;
+}
+
+.DualInputSplitter div {
+    flex-grow: 1;
+}
+
+@media only screen and (max-width: 700px) {
+    .DualInputSplitter {
+        flex-direction: column;
+    }
+}
