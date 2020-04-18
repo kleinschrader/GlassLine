@@ -8,12 +8,14 @@ let bcryptRounds = 10;
 let b62alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 //set up connection parameters to the database
-var dbparamas = {
+var dbpool = mysql.createPool({
   host     : 'database',
   user     : 'db_user_gl',
   password : 'passwd12',
-  database : 'glassline'
-};
+  database : 'glassline',
+  connectionLimit : 0
+});
+
 
 //a class that gets created if a ws is created
 //handles all commands, session managment etc
@@ -27,9 +29,7 @@ class wsConnection {
       this.bindFunctions()
 
       //set up connection to the database
-      this.db = mysql.createConnection(dbparamas)
-
-      this.db.on('error',this.onSQLDie)
+      dbpool.getConnection(this.onDBConnection)
 
       //makes it so the websocket is avalabile from this.socket
       this.socket = WebSocket
@@ -48,6 +48,17 @@ class wsConnection {
     this.checkCredLoginCallback = this.checkCredLoginCallback.bind(this)
     this.onSQLDie = this.onSQLDie.bind(this)
     this.onSocketDie = this.onSocketDie.bind(this)
+    this.onDBConnection = this.onDBConnection.bind(this)
+  }
+
+  onDBConnection(err, connection) {
+    if(err != null)
+    {
+      console.log(err)
+    }
+
+    this.db = connection;
+    this.db.on('error',this.onSQLDie)
   }
 
   /** This is the main function to handle all data send to the server
@@ -61,6 +72,7 @@ class wsConnection {
       //to keep the connection alive empty packets are send, we dont need to do anything
       if(data === "")
       {
+        this.db.query('SELECT 1')
         return;
       }
 
@@ -275,19 +287,33 @@ class wsConnection {
   }
 
   onSQLDie(error) {
-    console.log("DB Closed.")
+    try
+    {
+      console.log("DB Closed.")
 
-    this.onSocketDie = function(){}
+      this.onSocketDie = function(){}
 
-    this.socket.close()
+      this.socket.close()
+    }
+    catch(e)
+    {
+      console.log(e)
+    }
   }
 
   onSocketDie(error) {
-    console.log("WebSocket Closed.")
+    try
+    {
+      console.log("WebSocket Closed.")
 
-    this.onSQLDie = function(){}
+      this.onSQLDie = function(){}
 
-    this.db.end()
+      this.db.release()
+    }
+    catch(e)
+    {
+      console.log(e)
+    }
   }
 
   /** This function will reset all stored variables in the websocket, resetting the session
