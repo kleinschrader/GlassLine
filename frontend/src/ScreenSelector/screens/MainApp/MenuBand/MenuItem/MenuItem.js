@@ -42,7 +42,7 @@ class MenuItem extends React.Component {
         {
             classNameRet = classNameRet + " SelectedItem"
         }
-        else if(this.props.title == "Menu")
+        else if(this.props.title === "Menu")
         {
             classNameRet = classNameRet + " HamburgerMenu"
         }
