@@ -36,6 +36,7 @@ class WSClient extends EventTarget {
     }
 
     onMessage(rawdata) {
+
         let data = JSON.parse(rawdata.data)
 
         let responseIndex = null;
@@ -56,9 +57,8 @@ class WSClient extends EventTarget {
             })
 
             this.openRequests[responseIndex].dispatchEvent(event)
-        }
-
-        this.openRequests.splice(responseIndex)
+            this.openRequests.splice(responseIndex,1)
+        } 
     }
 
     genSeq() {
@@ -124,6 +124,19 @@ class WSClient extends EventTarget {
         return retObj;
     }
 
+    checkTenantAdmin() {
+        let requestObj = {}
+        requestObj.cmd = 'checkTenantAdmin';
+        requestObj.seq = this.genSeq();
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+        return retObj;
+    }
+
     createServer(servername, tenant, parent) {
         let requestObj = {};
         requestObj.cmd = 'createServer';
@@ -133,6 +146,19 @@ class WSClient extends EventTarget {
         requestObj.parent = parent
 
         this.socket.send(JSON.stringify(requestObj))
+    }
+
+    getAllServers() {
+        let requestObj = {};
+        requestObj.cmd = 'getAllServers';
+        requestObj.seq = this.genSeq();
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+        return retObj;
     }
 
     logoff() {
