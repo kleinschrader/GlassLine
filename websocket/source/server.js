@@ -52,6 +52,7 @@ class wsConnection {
     this.getTenantsCallback = this.getTenantsCallback.bind(this)
     this.getTenantServerCallback = this.getTenantServerCallback.bind(this)
     this.genericSuccessfulReturn = this.genericSuccessfulReturn.bind(this)
+    this.getAllServersCallback = this.getAllServersCallback.bind(this)
   }
 
   onDBConnection(err, connection) {
@@ -85,22 +86,28 @@ class wsConnection {
       //find the applicable function to the users request and call it
       switch(dataObject.cmd) {
         case 'checkTokenLogin':
-          this.checkTokenLogin(dataObject);
-          break;
+          this.checkTokenLogin(dataObject)
+          break
         case 'checkCredLogin':
-          this.checkCredLogin(dataObject);
-          break;
+          this.checkCredLogin(dataObject)
+          break
         case 'logoff':
-          this.logoff(dataObject);
-          break;
+          this.logoff(dataObject)
+          break
         case 'getTenants':
-          this.getTenants(dataObject);
+          this.getTenants(dataObject)
         case 'getTenantServer':
-          this.getTenantServer(dataObject);
-          break;
+          this.getTenantServer(dataObject)
+          break
         case 'createServer':
           this.createServer(dataObject)
-          break;
+          break
+        case 'checkTenantAdmin':
+          this.checkTenantAdmin(dataObject)
+          break
+        case 'getAllServers':
+          this.getAllServers(dataObject)
+          break
       }
     }
     catch(e)
@@ -397,6 +404,56 @@ class wsConnection {
     let genericSuccessfulReturn = this.genericSuccessfulReturn
     this.db.query("INSERT INTO servers(serverid,servername,accessToken,childOf,tenant) VALUES (UuidToBin(UUID()), ?, ?, (UuidToBin(?)),(UuidToBin(?)))",[data.servername,accessToken,data.parent,tenantToSet], function(error, results, fields) {genericSuccessfulReturn(error, results, fields, data.seq)})
 
+  }
+
+  checkTenantAdmin(data) {
+
+    let responseObj = {};
+    responseObj.seq = data.seq
+
+
+    if(this.uuid === null) {
+      responseObj.adminTenant = false
+    }
+    else {
+      responseObj.adminTenant = this.adminTenant
+    }
+
+    this.socket.send(JSON.stringify(responseObj))
+  }
+
+  getAllServers(data) {
+    if(this.uuid === null || !this.adminTenant) {
+      this.genericSuccessfulReturn("NONAUTH","","",data.seq)
+      return
+    }
+
+    let getAllServersCallback = this.getAllServersCallback 
+
+    this.db.query('SELECT servername, UuidFromBin(serverid) AS serverid, tenants.tenantname  FROM servers LEFT JOIN tenants ON tenants.tenantid = servers.tenant;',function (error, results, fields){getAllServersCallback(error, results, fields,data.seq)})
+  }
+
+  getAllServersCallback(error, results, fields, sequence) {
+    let returnObj = new Object;
+    returnObj.seq = sequence;
+    
+    if(error === null) {
+      returnObj.server = []
+
+      for(let i = 0; i < results.length; i++) {
+        returnObj.server[i] = {}
+
+        returnObj.server[i].servername = results[i].servername
+        returnObj.server[i].serverid = results[i].serverid
+        returnObj.server[i].tenantname = results[i].tenantname
+      }
+    }
+    else {
+      console.trace(error)
+      returnObj.server = false;
+    }
+
+    this.socket.send(JSON.stringify(returnObj))
   }
 
   genericSuccessfulReturn(error, results, fields, sequence) {
