@@ -1,5 +1,7 @@
 import React from 'react'
 
+import ServerListElement from './ServerListElement'
+
 import './ServerSubS.css'
 
 class ServerSubS extends React.Component {
@@ -43,9 +45,6 @@ class ServerSubS extends React.Component {
 
     handleSubmit (e) {
         e.preventDefault();
-
-        console.log(e.target.servername.value)
-
         document.WSClient.createServer(e.target.servername.value, e.target.tenant.value , e.target.parent.value)
     }
 
@@ -59,16 +58,13 @@ class ServerSubS extends React.Component {
 
     render() {
         const tenantOptions = this.state.tenants.map((elem) => 
-        <option key={elem.id} value={elem.id}>{elem.name}</option>
+            <option key={elem.id} value={elem.id}>{elem.name}</option>
         );
         const serverOptions = this.state.parents.map((elem) => 
-        <option key={elem.id} value={elem.id}>{elem.name}</option>
+            <option key={elem.id} value={elem.id}>{elem.name}</option>
         );
-        const serverList = this.state.serverList.map((elem) => 
-        <tr>
-            <td>{elem.servername}</td>
-            <td>{elem.tenantname}</td>
-        </tr>
+        const serverList = this.state.serverList.map((elem) =>
+            <ServerListElement key={elem.serverid} serverid={elem.serverid} tenantname={elem.tenantname} servername={elem.servername}/>
         );
         return (
             <div className="ServerSubS SubScreen">
@@ -102,11 +98,14 @@ class ServerSubS extends React.Component {
                         {tenantOptions}
                     </select>
                     <table className="ServerListTable">
-                        <tr>
-                            <th>Servername</th>
-                            <th>Tenant</th>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <th>Servername</th>
+                                <th>Tenant</th>
+                                <th>Actions</th>
+                            </tr>
                         {serverList}
+                        </tbody>
                     </table>
                 </div>
             </div>

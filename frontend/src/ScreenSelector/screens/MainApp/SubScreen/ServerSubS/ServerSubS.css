@@ -66,6 +66,40 @@
 
 .ServerListTable {
     width: 100%;
+    border-collapse: collapse; 
+    color: #fff;
+}
+
+.ServerListTable th { 
+    background-color: rgb(0, 107, 98);
+}
+
+.ServerListTable tr { 
+    background-color: rgb(107, 107, 107);
+}
+
+.ServerListTable tr:nth-child(2n) { 
+    background-color: rgb(139, 139, 139);
+}
+.ServerListTable td, .ServerListTable th {
+    border: solid;
+    border-width: 1px;
+    border-color: #000;
+    line-height: 1.5rem;
+}
+
+.ServerListTable tr td:last-child {
+    width: 3rem;
+    padding: 0;
+}
+
+.ServerListTable button {
+    border: 0;
+    height: 1.5rem;
+    width: 1.5rem;
+    background-color: transparent;
+    padding: 0;
+    color: #fff;
 }
 
 .ServerListBlock {
