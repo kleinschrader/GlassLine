@@ -1,0 +1,61 @@
+.SetupScreen {
+    background-color: rgb(66, 66, 66); 
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.SetupScreen h1 {
+    margin: 20px;
+    text-align: center;
+    height: 6vw;
+    font-size: 6vw;
+    color:#fff;
+}
+
+.SetupScreen p {
+    text-align: center;
+    color:#ddd;
+}
+
+.SetupScreen form {
+    display: flex;
+    flex-direction: column;
+    padding: 0 30% 0 30%;
+}
+
+.SetupScreen form input{
+    display: block;
+    padding: 0;
+    background-color: rgb(85, 85, 85);
+    border: solid;
+    border-width: 1px;
+    border-color: #000;
+    color: #fff;
+    text-align: center;
+}
+
+.SetupScreen form span {
+    margin: 0 0 1rem 0;
+    color: #777;
+    text-align: center;
+}
+
+.SetupScreen form input[type="submit"]{
+    background-color: rgb(0, 26, 104);
+}
+
+.SetupScreen .SetupScreenSpace {
+    flex-grow: 1;
+}
+
+.SetupScreenError {
+    background-color: #ff0000;
+    text-align: center;
+}
+
+@media only screen and (max-width: 700px) {
+    .SetupScreen form {
+        padding: 0 10px 0 10px;   
+    }
+}
