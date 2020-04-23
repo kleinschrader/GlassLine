@@ -1,9 +1,5 @@
 version: "3.7"
 services:
-    backend:
-        build: ./backend
-        volumes:
-            - ./backend/source:/var/www/html/
     database:
         build: ./database
         volumes:
