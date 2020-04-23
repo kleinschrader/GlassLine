@@ -65,6 +65,35 @@ class WSClient extends EventTarget {
         return Math.floor(Math.random() * 65000);
     }
 
+    getSetupRequired() {
+        let requestObj = {};
+        requestObj.cmd = 'getSetupRequired';
+        requestObj.seq = this.genSeq();
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+
+        return retObj;
+    }
+
+    checkSetupToken(token) {
+        let requestObj = {};
+        requestObj.cmd = 'checkSetupToken';
+        requestObj.seq = this.genSeq();
+        requestObj.token = token;
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+
+        return retObj;
+    }
+
     checkTokenLogin(token) {
         let requestObj = {};
         requestObj.cmd = 'checkTokenLogin';
