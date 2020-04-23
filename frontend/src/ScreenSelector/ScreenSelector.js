@@ -1,9 +1,10 @@
 import React from 'react';
 
 
-import LoginScreen from './screens/LoginScreen';
-import MainApp from './screens/MainApp';
-import ConnectionLostScreen from './screens/ConnectionLostScreen';
+import LoginScreen from './screens/LoginScreen'
+import MainApp from './screens/MainApp'
+import ConnectionLostScreen from './screens/ConnectionLostScreen'
+import SetupScreen from './screens/SetupScreen'
 
 class ScreenSelector extends React.Component {
     constructor(props) {
@@ -12,6 +13,7 @@ class ScreenSelector extends React.Component {
         this.completeTokenCheck = this.completeTokenCheck.bind(this)
         this.handleScreenChangeEvent = this.handleScreenChangeEvent.bind(this)
         this.socketReady = this.socketReady.bind(this)
+        this.completeGetSetupRequired = this.completeGetSetupRequired.bind(this)
     }
     
     componentDidMount() {
@@ -22,6 +24,22 @@ class ScreenSelector extends React.Component {
     }
 
     socketReady() {  
+        let SetupRequiredRequest = document.WSClient.getSetupRequired()
+        SetupRequiredRequest.addEventListener('complete',this.completeGetSetupRequired)
+    }
+
+    completeGetSetupRequired(r) {
+        if(r.detail.data.setupRequired)
+        {
+            this.setState({currentScreen : 'setup'})
+        }
+        else
+        {
+            this.checkTokenLogin()
+        }
+    }
+
+    checkTokenLogin() {
         let cookieMatch = document.cookie.match(/LOGINTOKEN=([A-Za-z0-9]+)/gm)
         if(cookieMatch != null)
         {
@@ -73,6 +91,10 @@ class ScreenSelector extends React.Component {
             case 'connectionLost':
                 return(
                     <ConnectionLostScreen />
+                )
+            case 'setup':
+                return(
+                    <SetupScreen />
                 )
             default:
                 return(
