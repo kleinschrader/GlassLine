@@ -7,6 +7,11 @@ let bcryptRounds = 10;
 
 let b62alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+let globalConfig = {
+  hasBeenSetup : false,
+  setupToken : null
+}
+
 //set up connection parameters to the database
 var dbpool = mysql.createPool({
   host     : 'database',
@@ -53,6 +58,7 @@ class wsConnection {
     this.getTenantServerCallback = this.getTenantServerCallback.bind(this)
     this.genericSuccessfulReturn = this.genericSuccessfulReturn.bind(this)
     this.getAllServersCallback = this.getAllServersCallback.bind(this)
+    this.getSetupRequiredCallback = this.getSetupRequiredCallback.bind(this)
   }
 
   onDBConnection(err, connection) {
@@ -85,6 +91,12 @@ class wsConnection {
 
       //find the applicable function to the users request and call it
       switch(dataObject.cmd) {
+        case 'getSetupRequired':
+          this.getSetupRequired(dataObject)
+          break
+        case 'checkSetupToken':
+          this.checkSetupToken(dataObject)
+          break
         case 'checkTokenLogin':
           this.checkTokenLogin(dataObject)
           break
@@ -124,6 +136,59 @@ class wsConnection {
     }
   }
   // SECTION MainCommands
+
+  getSetupRequired(data) {
+
+    if(globalConfig.hasBeenSetup) {
+      let responseObj = {}
+      responseObj.seq = data.seq
+
+      responseObj.setupRequired = false
+
+      this.socket.send(JSON.stringify(responseObj))
+    }
+    else {
+      let getSetupRequiredCallback = this.getSetupRequiredCallback
+
+      this.db.query('SELECT setUpComplete,UuidFromBin(setupToken) AS setupToken from settings',function(error, results, fields){getSetupRequiredCallback(error, results, fields, data.seq)})
+    }
+  }
+
+  getSetupRequiredCallback(error, results, fields, sequence) {
+    let responseObj = {}
+    responseObj.seq = sequence
+
+    if(error === null)
+    {
+      responseObj.setupRequired = !results[0].setUpComplete
+
+      globalConfig.hasBeenSetup = results[0].setUpComplete
+
+      globalConfig.setupToken = results[0].setupToken
+
+      console.log('The setuptoken for your glassline instance: ' + results[0].setupToken)
+    }
+    else
+    {
+      console.trace(error)
+    }
+    this.socket.send(JSON.stringify(responseObj))
+  }
+
+  checkSetupToken(data) {
+    let responseObj = {}
+    responseObj.seq = data.seq
+
+    if(data.token === globalConfig.setupToken && globalConfig.setupToken !== null) {
+      responseObj.successful = true
+      this.setupPermitted = true
+    }
+    else {
+      responseObj.successful = false
+    }
+
+    this.socket.send(JSON.stringify(responseObj))
+  }
 
   /** This function check if an identifying token is contained in side the database.
    *  If the token is not exactly 128 byte long it will call checkTokenLoginCallback with an error flag
@@ -522,6 +587,7 @@ class wsConnection {
   db = null
   tenant = null
   adminTenant = false
+  setupPermitted = false
 }
 
 const ws = new WebSocket.Server({

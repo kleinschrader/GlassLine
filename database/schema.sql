@@ -32,6 +32,26 @@ RETURN
 DELIMITER ;
 
 
+-- The global settings table
+-- setUpComplete = set once as soon as the system is setup
+-- setupToken = the token required to begin the setip (a uuid)
+-- forceMFA = set on setup, if yes it requires users to setup 2fa before continuing
+CREATE TABLE settings(
+  setUpComplete bool,
+  setupToken BINARY(16),
+  forceMFA bool
+);
+
+
+INSERT INTO
+  settings(setUpComplete,setupToken)
+VALUES
+  (
+    false,
+    UuidToBin(UUID())
+  );
+
+
 -- Creates a table for the users
 -- userid = a UUID unique to each user
 -- username = the name used for logging in
@@ -40,6 +60,7 @@ DELIMITER ;
 -- resumeSessionCode = a code saved in a cookie to resume the session as an alternative to using username/password
 -- resumeSessionCodeSpoil = a date when the code loses its validity
 -- tanant = the tenant UUID this user belongs to
+-- mfakey = the key used to generate 6 Diget codes
 CREATE TABLE users(
   userid BINARY(16) PRIMARY KEY,
   username varchar(64),
@@ -47,7 +68,8 @@ CREATE TABLE users(
   tenantAdmin bool,
   resumeSessionCode varchar(128),
   resumeSessionCodeSpoil date,
-  tenant BINARY(16)
+  tenant BINARY(16),
+  mfakey BINARY(32)
 );
 
 -- Creates a table for servers
@@ -74,25 +96,27 @@ CREATE TABLE tenants(
   globalAdmin bool
 );
 
-INSERT INTO
-  tenants(tenantid,tenantname,globalAdmin)
-VALUES
-  (
-    UuidToBin(UUID()),
-    "Global Tenant",
-    true
-  );
 
--- Creates the user "Administrator" with the password "passwd12"
-INSERT INTO
-  users(userid, username, passwd, tenant)
-VALUES
-  (
-    UuidToBin(UUID()),
-    "administrator",
-    "$2b$10$NEnpthiO6Iu2rdnp5FkBWuXNfyDV4Rx9BXFVlNr28hw07t99GK0eK",
-    (SELECT tenantid FROM tenants WHERE tenantname = "Global Tenant")
-  );
+--INSERT INTO
+--  tenants(tenantid,tenantname,globalAdmin)
+--VALUES
+--  (
+--    UuidToBin(UUID()),
+--    "Global Tenant",
+--    true
+--  );
+--
+---- Creates the user "Administrator" with the password "passwd12"
+--INSERT INTO
+--  users(userid, username, passwd, tenant)
+--VALUES
+--  (
+--    UuidToBin(UUID()),
+--    "administrator",
+--    "$2b$10$NEnpthiO6Iu2rdnp5FkBWuXNfyDV4Rx9BXFVlNr28hw07t99GK0eK",
+--    (SELECT tenantid FROM tenants WHERE tenantname = "Global Tenant")
+--  );
+
 
 -- Here we create the db_user_gl so out backend can access glassline
 CREATE USER 'db_user_gl' IDENTIFIED BY 'passwd12';
