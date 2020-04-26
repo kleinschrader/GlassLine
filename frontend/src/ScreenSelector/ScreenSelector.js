@@ -5,6 +5,7 @@ import LoginScreen from './screens/LoginScreen'
 import MainApp from './screens/MainApp'
 import ConnectionLostScreen from './screens/ConnectionLostScreen'
 import SetupScreen from './screens/SetupScreen'
+import SetupInputScreen from './screens/SetupInputScreen'
 
 class ScreenSelector extends React.Component {
     constructor(props) {
@@ -95,6 +96,10 @@ class ScreenSelector extends React.Component {
             case 'setup':
                 return(
                     <SetupScreen />
+                )
+            case 'setupInput':
+                return(
+                    <SetupInputScreen />
                 )
             default:
                 return(
