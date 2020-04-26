@@ -35,11 +35,9 @@ DELIMITER ;
 -- The global settings table
 -- setUpComplete = set once as soon as the system is setup
 -- setupToken = the token required to begin the setip (a uuid)
--- forceMFA = set on setup, if yes it requires users to setup 2fa before continuing
 CREATE TABLE settings(
   setUpComplete bool,
-  setupToken BINARY(16),
-  forceMFA bool
+  setupToken BINARY(16)
 );
 
 
@@ -90,10 +88,13 @@ CREATE TABLE servers(
 -- tenantid = a UUID unique to each tenant
 -- tenantname = the name of the tenant
 -- globalAdmin = if this tenant has admin rights
+-- forceMFA = if yes it requires users to setup 2fa before continuing
+
 CREATE TABLE tenants(
   tenantid BINARY(16),
   tenantname varchar(64),
-  globalAdmin bool
+  globalAdmin bool,
+  forceMFA bool
 );
 
 
