@@ -33,6 +33,10 @@ class TabSelector extends React.Component {
 class SetupInputScreen extends React.Component {
     constructor(props) {
         super(props)
+
+        this.setupData = {}
+        this.setupData.tenantName = ""
+        this.setupData.useMFA = false
         
         this.changeScreen = this.changeScreen.bind(this)
     }
@@ -49,7 +53,7 @@ class SetupInputScreen extends React.Component {
         switch(this.state.currentTab) {
             case 'tenant':
                 return(
-                    <TenantTab />
+                    <TenantTab data={this.setupData} />
                 )
             default:
                 return(

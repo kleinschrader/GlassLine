@@ -1,0 +1,30 @@
+.TenantTab {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: #fff;
+}
+
+.TenantTab input[type="text"] {
+    width: 90%;
+    margin: 0 5% 0 5%;
+}
+
+
+.TenantTab input[type="checkbox"] {
+    display: none;
+}
+
+.CoolToggle .oncircle {
+    display: none;
+}
+
+#TenantForce2faCheckbox:checked + .CoolToggle .oncircle {
+    display: unset;
+}
+
+#TenantForce2faCheckbox:checked + .CoolToggle .offcircle {
+    display: none;
+}
+
+#TenantForce2faCheckbox:checked + input {display: block;}

@@ -37,7 +37,7 @@
 }
 
 .TabSelector.selected {
-    background-color: rgb(0, 107, 98);
+    background-color: #006b62;
 }
 
 .TabSelector.selected .TabSelectorSpike{
