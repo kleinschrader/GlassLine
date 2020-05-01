@@ -61,7 +61,7 @@ VALUES
 -- mfakey = the key used to generate 6 Diget codes
 CREATE TABLE users(
   userid BINARY(16) PRIMARY KEY,
-  username varchar(64),
+  username varchar(64) UNIQUE,
   passwd varchar(60),
   tenantAdmin bool,
   resumeSessionCode varchar(128),

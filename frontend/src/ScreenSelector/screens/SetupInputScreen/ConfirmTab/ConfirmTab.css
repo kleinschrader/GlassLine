@@ -1,0 +1,84 @@
+.ConfirmTab {
+    display: grid;
+    height: calc(90% - 10vh);
+    padding: 5%;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+    "data data"
+    "requirements confirm";
+}
+
+.DataDisplay {
+    grid-area: data;
+    background-color: rgb(44, 44, 44);
+    color: #fff;
+    margin: 1rem;
+    padding: 1rem;
+}
+
+.RequirementsDisplay {
+    grid-area: requirements;
+    background-color: rgb(44, 44, 44);
+    margin: 0 1rem 0 1rem
+}
+
+.Requirement.NotCompleted {
+    color: red;
+    font-weight: bold;
+}
+
+.Requirement.Completed {
+    color: green;
+}
+
+.Requirement.Optional.NotCompleted {
+    color: orange;
+    font-weight: normal;
+}
+
+.ConfirmDisplay {
+    grid-area: confirm;
+    background-color: rgb(44, 44, 44);
+    margin: 0 1rem 0 0;
+}
+
+.ConfirmDisplay h3 {
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    height: 2rem;
+    line-height: 2rem;
+}
+
+.ConfirmDisplay button {
+    margin: 2rem;
+    height: calc(100% - 6rem);
+    width: calc(100% - 4rem);
+    border: none;
+    background-color: rgb(0, 26, 104);
+    color: #fff;
+}
+
+.ConfirmDisplay button:disabled {
+    background-color: #222222;
+    color: #777777;
+}
+
+@media only screen and (max-width: 700px) {
+    .ConfirmTab {
+        display: grid;
+        height: calc(90% - 10vh);
+        padding: 5%;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-areas:
+        "data"
+        "requirements"
+        "confirm";
+    }
+
+    .ConfirmDisplay {
+        margin: 1rem 1rem 0 1rem
+    }
+}

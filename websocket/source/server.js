@@ -2,6 +2,8 @@ const WebSocket = require('ws');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const uuid = require('uuid');
+const uuidv4 =  require('uuid/v4');
 
 let bcryptRounds = 10;
 
@@ -59,6 +61,7 @@ class wsConnection {
     this.genericSuccessfulReturn = this.genericSuccessfulReturn.bind(this)
     this.getAllServersCallback = this.getAllServersCallback.bind(this)
     this.getSetupRequiredCallback = this.getSetupRequiredCallback.bind(this)
+    this.createTenantCallback = this.createTenantCallback.bind(this)
   }
 
   onDBConnection(err, connection) {
@@ -114,11 +117,20 @@ class wsConnection {
         case 'createServer':
           this.createServer(dataObject)
           break
-        case 'checkTenantAdmin':
-          this.checkTenantAdmin(dataObject)
+        case 'checkAdminTenant':
+          this.checkAdminTenant(dataObject)
           break
         case 'getAllServers':
           this.getAllServers(dataObject)
+          break
+        case 'createTenant':
+          this.createTenant(dataObject)
+          break
+        case 'createUser':
+          this.createUser(dataObject)
+          break
+        case 'finishSetup':
+          this.finishSetup(dataObject)
           break
       }
     }
@@ -373,23 +385,35 @@ class wsConnection {
     this.socket.send(JSON.stringify(returnObj))
   }
 
+  /** This function will query all tenants from the db aslong as the tenant of the user is an admin
+  * @param {Object} data - The Object containing the data
+  */
   getTenants(data) {
-    //disallow non authenticated users to run this command, 
+    //disallow non authenticated users to run this command
     if(this.uuid === null) {
       this.getTenantsCallback("NONAUTH","","",data.seq)
       return
     }
 
+    //dissallow non admin tenants to run this command
     if(!this.adminTenant) {
       this.getTenantsCallback("NONAUTH","","",data.seq)
       return
     }
 
+    //set a temporary reference to getTenantsCallback as 'this' is not avalibe in an anonymos function
     let getTenantsCallback = this.getTenantsCallback
 
+    // select all tenants from the database
     this.db.query("SELECT UuidFromBin(tenantid) AS tenantid, tenantname FROM tenants", function(error, results, fields) {getTenantsCallback(error, results, fields, data.seq)})
   }
 
+  /** The callback function to checkCredLogin handles the returning values from mysql and sends the result back to the client
+   * @param {string} error - Any Error that occured, standard in mysql but can be hijacked to force failure
+   * @param {*} results
+   * @param {*} fields 
+   * @param {number} sequence - The original sequence
+   */
   getTenantsCallback(error, results, fields, sequence) {
     let returnObj = new Object;
     returnObj.seq = sequence;
@@ -471,7 +495,7 @@ class wsConnection {
 
   }
 
-  checkTenantAdmin(data) {
+  checkAdminTenant(data) {
 
     let responseObj = {};
     responseObj.seq = data.seq
@@ -496,6 +520,70 @@ class wsConnection {
     let getAllServersCallback = this.getAllServersCallback 
 
     this.db.query('SELECT servername, UuidFromBin(serverid) AS serverid, tenants.tenantname  FROM servers LEFT JOIN tenants ON tenants.tenantid = servers.tenant;',function (error, results, fields){getAllServersCallback(error, results, fields,data.seq)})
+  }
+
+  createTenant(data) {
+    if(!this.setupPermitted) {
+      if(!this.adminTenant) {
+        this.genericSuccessfulReturn("NONAUTH",null,null,data.seq)
+        return
+      }
+    }
+
+    let tenantUuid = uuidv4();
+    let createTenantCallback = this.createTenantCallback
+    this.db.query("INSERT INTO tenants(tenantid,tenantname,globalAdmin,forceMFA) VALUES (UuidToBin(?), ?, ? ,?)",[tenantUuid,data.tenantname,data.globalAdmin,data.useMFA], function(error,results, fields) {
+      createTenantCallback(error,results, fields,tenantUuid , data.seq)
+    })
+  }
+
+  createTenantCallback(error,results, fields, tenantUuid, sequence) {
+    let returnObj = new Object;
+    returnObj.seq = sequence;
+    
+    if(error !== null) {
+      console.trace(error)
+      returnObj.successful = false
+    }
+    else {
+      returnObj.successful = true
+      returnObj.uuid = tenantUuid
+    }
+
+    this.socket.send(JSON.stringify(returnObj))
+  }
+
+  createUser(data) {
+    if(!this.setupPermitted) {
+      if(!this.admin) {
+        this.genericSuccessfulReturn("NONAUTH",null,null,data.seq)
+        return
+      }
+    }
+
+    let passwdHash = bcrypt.hashSync(data.password, bcryptRounds);
+
+    let socket = this.socket
+
+    this.db.query("INSERT INTO users(userid,username,passwd,tenantAdmin,tenant) VALUES(UuidToBin(UUID()),?,?,?,UuidToBin(?))",[data.username,passwdHash,data.tenantAdmin,data.tenant], function(error,results, fields){
+      let returnObj = new Object
+      returnObj.seq = data.seq
+      
+      if(error !== null) {
+        console.trace(error)
+        returnObj.successful = false
+      }
+      else {
+        returnObj.successful = true
+      }
+
+      socket.send(JSON.stringify(returnObj))
+    })
+  }
+
+  finishSetup(data) {
+    globalConfig.hasBeenSetup = true
+    this.db.query("UPDATE settings SET setUpComplete = false")
   }
 
   getAllServersCallback(error, results, fields, sequence) {

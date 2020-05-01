@@ -178,9 +178,9 @@ class WSClient extends EventTarget {
     }
 
     getAllServers() {
-        let requestObj = {};
-        requestObj.cmd = 'getAllServers';
-        requestObj.seq = this.genSeq();
+        let requestObj = {}
+        requestObj.cmd = 'getAllServers'
+        requestObj.seq = this.genSeq()
 
         let retObj = new WSClient_Request()
         retObj.seq = requestObj.seq
@@ -188,6 +188,46 @@ class WSClient extends EventTarget {
 
         this.socket.send(JSON.stringify(requestObj))
         return retObj;
+    }
+
+    createTenant(tenantname, useMFA, globalAdmin) {
+        let requestObj = {}
+        requestObj.cmd = 'createTenant'
+        requestObj.seq = this.genSeq()
+        requestObj.tenantname = tenantname
+        requestObj.useMFA = useMFA
+        requestObj.globalAdmin = globalAdmin
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+        return retObj;
+    }
+
+    createUser(username,password,tenant,tenantAdmin) {
+        let requestObj = {}
+        requestObj.cmd = 'createUser'
+        requestObj.seq = this.genSeq()
+        requestObj.username = username
+        requestObj.password = password
+        requestObj.tenant = tenant
+        requestObj.tenantAdmin = tenantAdmin
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+        return retObj;
+    }
+
+    finishSetup() {
+        let requestObj = {}
+        requestObj.cmd = 'finishSetup'
+
+        this.socket.send(JSON.stringify(requestObj))
     }
 
     logoff() {

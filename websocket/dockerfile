@@ -6,4 +6,6 @@ COPY source/ /usr/src/app
 
 RUN npm install
 
+RUN npm list -g --depth 1
+
 CMD [ "node", "server.js" ]

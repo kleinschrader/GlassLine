@@ -3,6 +3,8 @@ import React from 'react'
 import './SetupInputScreen.css'
 
 import TenantTab from './TenantTab'
+import AdminTab from './AdminTab'
+import ConfirmTab from './ConfirmTab'
 
 class TabSelector extends React.Component {
     
@@ -37,6 +39,9 @@ class SetupInputScreen extends React.Component {
         this.setupData = {}
         this.setupData.tenantName = ""
         this.setupData.useMFA = false
+        this.setupData.username = ""
+        this.setupData.password = ""
+        this.setupData.confirmPassword = ""
         
         this.changeScreen = this.changeScreen.bind(this)
     }
@@ -54,6 +59,14 @@ class SetupInputScreen extends React.Component {
             case 'tenant':
                 return(
                     <TenantTab data={this.setupData} />
+                )
+            case 'admin':
+                return(
+                    <AdminTab data={this.setupData} />
+                )
+            case 'confirm':
+                return(
+                    <ConfirmTab data={this.setupData}/>
                 )
             default:
                 return(

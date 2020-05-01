@@ -44,6 +44,18 @@
     fill: rgb(0, 107, 98);
 }
 
+form input{
+    display: block;
+    padding: 0;
+    background-color: rgb(85, 85, 85);
+    border: solid;
+    border-width: 1px;
+    border-color: #000;
+    color: #fff;
+    text-align: center;
+}
+
+
 @media only screen and (max-width: 700px) {
     .TabSelectorSpike {
         display: none;
