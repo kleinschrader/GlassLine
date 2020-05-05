@@ -1,5 +1,14 @@
+#download newest db
+pacman -Sy --noconfirm
+
 # install all the packages needed to build the program
-apk add --no-cache g++ make git cmake
+pacman -S gcc make git cmake --noconfirm
+
+# install the mariadb connecter
+pacman -S mariadb-libs --noconfirm
+ 
+# install the boost and other libarys
+pacman -S boost boost-libs libffi --noconfirm
 
 ### BEGIN websocketpp ###
 
@@ -38,4 +47,4 @@ mkdir /usr/app
 cp glassline-websocket /usr/app/glassline-websocket
 
 # cleaning up the packages used to build the program
-apk del g++ make git cmake
+pacman -R gcc make git cmake --noconfirm

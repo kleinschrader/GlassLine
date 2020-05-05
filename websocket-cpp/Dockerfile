@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM archlinux:latest
 
 RUN mkdir /tmp/glassline-websocket
 COPY ./source /tmp/glassline-websocket
