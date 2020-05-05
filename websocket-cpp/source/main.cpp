@@ -14,6 +14,8 @@ int main()
         // Initialize Asio
         websocketServer.init_asio();
 
+        websocketServer.clear_access_channels(websocketpp::log::alevel::all);
+
         // Register our message handler
         //websocketServer.set_message_handler(bind(&websocketServer.handleMessage,&websocketServer,::_1,::_2));
         websocketServer.set_message_handler(bind([](server* s, websocketpp::connection_hdl hdl, message_ptr msg) {

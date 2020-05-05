@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+
 class sessionHandler
 {
 private:
@@ -15,7 +16,9 @@ public:
     sessionHandler(websocketpp::connection_hdl newHDL);
     ~sessionHandler();
 
-    std::string handleMessage(std::string const& message);
+    void debugOut(std::string message);
+
+    static void handleMessage(websocketpp::connection_hdl hdl, std::string message, websocketpp::frame::opcode::value opcode, sessionHandler* session ,void* s);
 
     websocketpp::connection_hdl hdl;
 };
