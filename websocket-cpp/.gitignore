@@ -1,2 +1,5 @@
 build/
 source/glassline-websocket
+source/objects
+source/glassline-websocket-d
+source/objects-d

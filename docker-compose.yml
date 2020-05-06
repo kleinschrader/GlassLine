@@ -10,5 +10,7 @@ services:
             - "8080:80"
     websocket:
         build: ./websocket
+    websocket-cpp:
+        build: ./websocket-cpp
 volumes:
     db-data:

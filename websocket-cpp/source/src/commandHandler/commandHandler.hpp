@@ -7,25 +7,37 @@
 
 #include "../sessionHandler/sessionHandler.h"
 
+#include "../commandWrapper/commands.h"
+
 std::string handleCommand(sessionHandler* session, std::string const& command) {
     try 
     {
-        auto commandData = nlohmann::json::parse(command);
+        nlohmann::json commandData = nlohmann::json::parse(command);
         nlohmann::json response;
 
         std::string parsedCommand = commandData["cmd"];
         
-        if(parsedCommand == "getSetupRequired") {
+        commandWrapper* cmd;
 
+        if(parsedCommand == "getSetupRequired")
+        {
+            cmd = new getSetupRequired;
+        }
+        else {
+            response["successful"] = false;
+            response["error"] = "Unknown Command";
+            response["seq"] = (int)commandData["seq"];
+
+            session->debugOut("Issued unknown command");
+
+            return response.dump();
         }
         
-        response["successful"] = false;
-        response["error"] = "Unknown Command";
-        response["seq"] = (int)commandData["seq"];
+        cmd->setSequence(commandData["seq"]);
+        cmd->session = session;
+        cmd->run();
 
-        session->debugOut("Issued unknown command");
-
-        return response.dump();
+        return cmd->getJSONString();
     }
     catch(nlohmann::json::exception& e)
     {

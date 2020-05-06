@@ -4,6 +4,8 @@ services:
         build: ./database
         volumes:
             - db-data:/var/lib/mysql
+        ports:
+            - "3306:3306"
     frontend:
         build: ./frontend
         ports:
@@ -12,5 +14,7 @@ services:
         build: ./websocket
         volumes:
             - ./websocket/source:/usr/src/app
+    websocket-cpp:
+        build: ./websocket-cpp
 volumes:
     db-data:

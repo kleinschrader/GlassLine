@@ -21,6 +21,7 @@ class server : public websocketpp::server<websocketpp::config::asio>
 {
 private:
     std::vector<sessionHandler*> sessions;
+    boost::mutex sessionMutex;
 public:
     void handleNewConnection(websocketpp::connection_hdl hdl);
     void handleMessage(std::string const& message, websocketpp::connection_hdl hdl, websocketpp::frame::opcode::value opcode);
