@@ -36,4 +36,19 @@ void sessionHandler::debugOut(std::string message)
     std::cout << "[HDL: " << this->hdl.lock().get() << " ]: " << message << std::endl;
 }
 
- 
+ bool sessionHandler::getFlag(u_int16_t flag)
+ {
+    return (this->flags & flag) != 0;
+ }
+
+void sessionHandler::setFlag(u_int16_t flag, bool newValue)
+ {
+    if(newValue)
+    {
+        this->flags = this->flags ^ flag;
+    }
+    else
+    {
+        this->flags = this->flags | ~flag;
+    }
+ }
