@@ -2,6 +2,12 @@
 
 void checkSetupToken::run(const nlohmann::json &args)
 {
+
+    if(!checkArgument(args,"token"))
+    {
+        return;
+    }
+
     mysql_query(
         this->session->MYSQLHandle,
         "SELECT UuidFromBin(setupToken) AS setupToken from settings"
@@ -20,6 +26,7 @@ void checkSetupToken::run(const nlohmann::json &args)
     else
     {
         this->responseObject["successful"] = false;
+        this->responseObject["error"] = "Wrong Token";
     }
 
     mysql_free_result(result);

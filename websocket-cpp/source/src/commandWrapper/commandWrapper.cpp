@@ -10,3 +10,16 @@ std::string commandWrapper::getJSONString()
 {
     return this->responseObject.dump();
 }
+
+bool commandWrapper::checkArgument(const nlohmann::json &args, const std::string &expectedArg)
+{
+    if(args.contains(expectedArg))
+    {
+        return true;
+    }
+    
+    this->responseObject["successful"] = false;
+    this->responseObject["error"] = "Missing Argument";
+
+    return false;
+}

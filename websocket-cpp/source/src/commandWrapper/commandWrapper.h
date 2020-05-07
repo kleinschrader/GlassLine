@@ -9,8 +9,6 @@
 
 #include "../sessionHandler/sessionHandler.h"
 
-
-
 class commandWrapper
 {
 private:
@@ -20,6 +18,8 @@ public:
     ~commandWrapper() {};
 
     void setSequence(const unsigned int sequence);
+
+    bool checkArgument(const nlohmann::json &args, const std::string &expectedArg);
   
     nlohmann::json responseObject;
     sessionHandler* session;

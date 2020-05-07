@@ -1,6 +1,6 @@
-release: objects/main.o objects/WebSocketServer.o objects/sessionHandler.o objects/commandWrapper.o objects/getSetupRequired.o objects/checkSetupToken.o
+release: objects/main.o objects/WebSocketServer.o objects/sessionHandler.o objects/commandWrapper.o objects/getSetupRequired.o objects/checkSetupToken.o objects/checkTokenLogin.o
 	g++ -lpthread -lboost_thread -lmariadb -std=c++14 -o glassline-websocket objects/* ./src/commandHandler/commandHandler.hpp
-debug: objects-d/main.o objects-d/WebSocketServer.o objects-d/sessionHandler.o objects-d/commandWrapper.o objects-d/getSetupRequired.o objects-d/checkSetupToken.o
+debug: objects-d/main.o objects-d/WebSocketServer.o objects-d/sessionHandler.o objects-d/commandWrapper.o objects-d/getSetupRequired.o objects-d/checkSetupToken.o objects-d/checkTokenLogin.o
 	g++ -ggdb -lpthread -lboost_thread -lmariadb -std=c++14 -o glassline-websocket-d objects-d/* ./src/commandHandler/commandHandler.hpp -DDEBUG
 
 findFiles:
@@ -24,6 +24,9 @@ objects/getSetupRequired.o: ./src/commandWrapper/commands/getSetupRequired/getSe
 objects/checkSetupToken.o: ./src/commandWrapper/commands/checkSetupToken/checkSetupToken.cpp
 	g++ -c ./src/commandWrapper/commands/checkSetupToken/checkSetupToken.cpp -o objects/checkSetupToken.o
 
+objects/checkTokenLogin.o: ./src/commandWrapper/commands/checkTokenLogin/checkTokenLogin.cpp
+	g++ -c ./src/commandWrapper/commands/checkTokenLogin/checkTokenLogin.cpp -o objects/checkTokenLogin.o
+
 objects-d/main.o: main.cpp
 	g++ -ggdb -c ./main.cpp -o objects-d/main-d.o -DDEBUG
 
@@ -42,6 +45,8 @@ objects-d/getSetupRequired.o: ./src/commandWrapper/commands/getSetupRequired/get
 objects-d/checkSetupToken.o: ./src/commandWrapper/commands/checkSetupToken/checkSetupToken.cpp
 	g++ -ggdb -c ./src/commandWrapper/commands/checkSetupToken/checkSetupToken.cpp -o objects-d/checkSetupToken.o -DDEBUG
 	
+objects-d/checkTokenLogin.o: ./src/commandWrapper/commands/checkTokenLogin/checkTokenLogin.cpp
+	g++ -ggdb -c ./src/commandWrapper/commands/checkTokenLogin/checkTokenLogin.cpp -o objects-d/checkTokenLogin.o -DDEBUG
 
 clean:
 	rm objects-d/*
