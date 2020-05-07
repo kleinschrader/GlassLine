@@ -25,14 +25,23 @@ namespace sessionFlags
 {
     enum flags
     {
-        FLAG_SETUP_PERMITTED = 1
+        FLAG_SETUP_PERMITTED = 1,
+        FLAG_USER_LOGGED_ON = 2,
+        FLAG_ADMIN_TENANT = 4
     };
+};
+
+struct sessionData
+{
+    std::string user_uuid = "";
+    std::string tenant_uuid = "";
 };
 
 class sessionHandler
 {
 private:
     u_int16_t flags = 0;
+    
 public:
     sessionHandler(websocketpp::connection_hdl newHDL);
     ~sessionHandler();
@@ -43,6 +52,8 @@ public:
     bool getFlag(u_int16_t flag);
 
     static void handleMessage(websocketpp::connection_hdl hdl, std::string message, websocketpp::frame::opcode::value opcode, sessionHandler* session ,void* s);
+
+    sessionData sessionInfo;
 
     websocketpp::connection_hdl hdl;
 
