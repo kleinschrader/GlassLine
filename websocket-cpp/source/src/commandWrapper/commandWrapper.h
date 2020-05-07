@@ -26,7 +26,7 @@ public:
 
     std::string getJSONString();
 
-    virtual void run() = 0;
+    virtual void run(const nlohmann::json &args) = 0;
 };
 
 

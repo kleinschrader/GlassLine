@@ -8,6 +8,6 @@ public:
     getSetupRequired() {};
     ~getSetupRequired() {};
 
-    void run();
+    void run(const nlohmann::json &args);
 };
 

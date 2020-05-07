@@ -1,6 +1,6 @@
 #include "getSetupRequired.h"
 
-void getSetupRequired::run()
+void getSetupRequired::run(const nlohmann::json &args)
 {
     mysql_query(
         this->session->MYSQLHandle,

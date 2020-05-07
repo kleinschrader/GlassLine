@@ -35,7 +35,7 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         
         cmd->setSequence(commandData["seq"]);
         cmd->session = session;
-        cmd->run();
+        cmd->run(commandData);
 
         return cmd->getJSONString();
     }
