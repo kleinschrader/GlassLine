@@ -10,7 +10,6 @@ class WSClient extends EventTarget {
 
         this.onMessage = this.onMessage.bind(this)
         this.onOpen = this.onOpen.bind(this)
-        this.keepAlive = this.keepAlive.bind(this)
         this.onClose = this.onClose.bind(this)
 
         this.socket = new WebSocket(config.server, "glasslinews")
@@ -20,8 +19,6 @@ class WSClient extends EventTarget {
     }
 
     onOpen() {
-        setInterval(this.keepAlive,15000)
-
         let event = new CustomEvent('open')
         this.dispatchEvent(event)
     }
@@ -29,10 +26,6 @@ class WSClient extends EventTarget {
     onClose() {
         let event = new CustomEvent('close')
         this.dispatchEvent(event)
-    }
-
-    keepAlive() {
-        this.socket.send("")
     }
 
     onMessage(rawdata) {
