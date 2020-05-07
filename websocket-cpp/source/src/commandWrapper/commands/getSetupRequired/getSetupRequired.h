@@ -3,7 +3,7 @@
 class getSetupRequired : public commandWrapper
 {
 private:
-    /* data */
+
 public:
     getSetupRequired() {};
     ~getSetupRequired() {};

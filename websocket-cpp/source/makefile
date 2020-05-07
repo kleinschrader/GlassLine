@@ -12,7 +12,7 @@ objects/main.o: main.cpp
 objects/WebSocketServer.o: ./src/WebSocketServer/WebSocketServer.cpp
 	g++ -c ./src/WebSocketServer/WebSocketServer.cpp -o objects/WebSocketServer.o
 
-objects/sessionHandler.o: ./src/sessionHandler/sessionHandler.cpp
+objects/sessionHandler.o: ./src/sessionHandler/sessionHandler.cpp objects/sessionHandler.o
 	g++ -c ./src/sessionHandler/sessionHandler.cpp -o objects/sessionHandler.o
 
 objects/commandWrapper.o: ./src/commandWrapper/commandWrapper.cpp
@@ -30,10 +30,10 @@ objects-d/main.o: main.cpp
 objects-d/WebSocketServer.o: ./src/WebSocketServer/WebSocketServer.cpp
 	g++ -ggdb -c ./src/WebSocketServer/WebSocketServer.cpp -o objects-d/WebSocketServer.o -DDEBUG
 
-objects-d/sessionHandler.o: ./src/sessionHandler/sessionHandler.cpp
+objects-d/sessionHandler.o: ./src/sessionHandler/sessionHandler.cpp objects-d/commandWrapper.o
 	g++ -ggdb -c ./src/sessionHandler/sessionHandler.cpp -o objects-d/sessionHandler.o -DDEBUG
 
-objects-d/commandWrapper.o: ./src/commandWrapper/commandWrapper.cpp
+objects-d/commandWrapper.o: ./src/commandWrapper/commandWrapper.cpp  
 	g++ -ggdb -c ./src/commandWrapper/commandWrapper.cpp -o objects-d/commandWrapper.o -DDEBUG
 
 objects-d/getSetupRequired.o: ./src/commandWrapper/commands/getSetupRequired/getSetupRequired.cpp

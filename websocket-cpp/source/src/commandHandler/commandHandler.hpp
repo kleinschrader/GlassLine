@@ -23,6 +23,10 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         {
             cmd = new getSetupRequired;
         }
+        else if(parsedCommand == "checkSetupToken")
+        {
+            cmd = new checkSetupToken;
+        }
         else {
             response["successful"] = false;
             response["error"] = "Unknown Command";
