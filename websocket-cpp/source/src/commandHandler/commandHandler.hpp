@@ -10,14 +10,15 @@
 #include "../commandWrapper/commands.h"
 
 std::string handleCommand(sessionHandler* session, std::string const& command) {
+    
+    commandWrapper* cmd = 0;
+
     try 
     {
         nlohmann::json commandData = nlohmann::json::parse(command);
         nlohmann::json response;
 
         std::string parsedCommand = commandData["cmd"];
-        
-        commandWrapper* cmd;
 
         if(parsedCommand == "getSetupRequired")
         {
@@ -28,6 +29,8 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
             cmd = new checkSetupToken;
         }
         else {
+            delete cmd;
+
             response["successful"] = false;
             response["error"] = "Unknown Command";
             response["seq"] = (int)commandData["seq"];
@@ -41,10 +44,19 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         cmd->session = session;
         cmd->run(commandData);
 
-        return cmd->getJSONString();
+        std::string jsonString = cmd->getJSONString();
+
+        delete cmd;
+
+        return jsonString;
     }
     catch(nlohmann::json::exception& e)
     {
+        if(cmd == 0)
+        {
+            delete cmd;
+        }
+
         session->debugOut("Issued malformed command");
 
         nlohmann::json response;
