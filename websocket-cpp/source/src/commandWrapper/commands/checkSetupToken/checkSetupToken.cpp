@@ -9,24 +9,23 @@ void checkSetupToken::run(const nlohmann::json &args)
     }
 
     mysql_query(
-        this->session->MYSQLHandle,
+        session->MYSQLHandle,
         "SELECT UuidFromBin(setupToken) AS setupToken from settings"
     );
 
-    MYSQL_RES *result = mysql_store_result(this->session->MYSQLHandle);
+    MYSQL_RES *result = mysql_store_result(session->MYSQLHandle);
    
     MYSQL_ROW row;
     row = mysql_fetch_row(result);
 
     if(args["token"] == row[0])
     {
-        this->session->setFlag(sessionFlags::FLAG_SETUP_PERMITTED, true);
-        this->responseObject["successful"] = true;
+        session->setFlag(sessionFlags::FLAG_SETUP_PERMITTED, true);
+        responseObject["successful"] = true;
     }
     else
     {
-        this->responseObject["successful"] = false;
-        this->responseObject["error"] = "Wrong Token";
+        setFailure("Wrong Token");
     }
 
     mysql_free_result(result);

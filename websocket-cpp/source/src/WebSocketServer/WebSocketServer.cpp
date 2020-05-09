@@ -2,13 +2,13 @@
 
 void server::handleNewConnection(websocketpp::connection_hdl hdl)
 {
-    this->sessionMutex.lock();
+    sessionMutex.lock();
     
     sessionHandler* newHandler = new sessionHandler(hdl);
 
-    this->sessions.push_back(newHandler);
+    sessions.push_back(newHandler);
     
-    this->sessionMutex.unlock();
+    sessionMutex.unlock();
 }
 
 void server::handleMessage(std::string const& message, websocketpp::connection_hdl hdl, websocketpp::frame::opcode::value opcode)
@@ -16,11 +16,11 @@ void server::handleMessage(std::string const& message, websocketpp::connection_h
     unsigned int connection = 0;
     bool connectionFound = false;
 
-    this->sessionMutex.lock();
+    sessionMutex.lock();
 
-    while(connection < this->sessions.size())
+    while(connection < sessions.size())
     {
-        if(this->sessions[connection]->hdl.lock().get() == hdl.lock().get()) {
+        if(sessions[connection]->hdl.lock().get() == hdl.lock().get()) {
             connectionFound = true;
             break;
         }
@@ -28,12 +28,12 @@ void server::handleMessage(std::string const& message, websocketpp::connection_h
         connection++;
     }
 
-    this->sessionMutex.unlock();
+    sessionMutex.unlock();
 
     if(connectionFound) {
         std::string response;
         
-        boost::thread thread(this->sessions[connection]->handleMessage,hdl, message, opcode,this->sessions[connection],this);
+        boost::thread thread(sessions[connection]->handleMessage,hdl, message, opcode,sessions[connection],this);
     }
     else {
         std::cout << "[HDL: " << hdl.lock().get() << " ]: Session not found." << std::endl;
@@ -43,26 +43,26 @@ void server::handleMessage(std::string const& message, websocketpp::connection_h
 void server::handleClosure(websocketpp::connection_hdl hdl) {
     unsigned int connection = 0;
 
-    this->sessionMutex.lock();
+    sessionMutex.lock();
 
-    while(connection < this->sessions.size())
+    while(connection < sessions.size())
     {
-        if(this->sessions[connection]->hdl.lock().get() == hdl.lock().get()) {
-            delete this->sessions[connection];
-            this->sessions.erase(this->sessions.begin() + connection);
+        if(sessions[connection]->hdl.lock().get() == hdl.lock().get()) {
+            delete sessions[connection];
+            sessions.erase(sessions.begin() + connection);
             std::cout << "[HDL: " << hdl.lock().get() << " ]: Session closed." << std::endl;
         }
 
         connection++;
     }
 
-    this->sessionMutex.unlock();
+    sessionMutex.unlock();
 }
 
 void server::handleCallback( websocketpp::connection_hdl hdl, std::string data, websocketpp::frame::opcode::value opcode) {
     try 
     {
-           this->send(hdl, data, opcode);
+           send(hdl, data, opcode);
     }
     catch (websocketpp::exception const & e) 
     {

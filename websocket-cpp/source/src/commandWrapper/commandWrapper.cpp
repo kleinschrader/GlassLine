@@ -2,13 +2,13 @@
 
 void commandWrapper::setSequence(const unsigned int sequence) 
 {
-    this->responseObject["seq"] = sequence;
+    responseObject["seq"] = sequence;
 }
 
 
 std::string commandWrapper::getJSONString()
 {
-    return this->responseObject.dump();
+    return responseObject.dump();
 }
 
 bool commandWrapper::checkArgument(const nlohmann::json &args, const std::string &expectedArg)
@@ -17,9 +17,14 @@ bool commandWrapper::checkArgument(const nlohmann::json &args, const std::string
     {
         return true;
     }
-    
-    this->responseObject["successful"] = false;
-    this->responseObject["error"] = "Missing Argument";
+
+    setFailure("Missing Argument");
 
     return false;
+}
+
+void commandWrapper::setFailure(const std::string &failure)
+{
+    responseObject["successful"] = false;
+    responseObject["error"] = failure;
 }
