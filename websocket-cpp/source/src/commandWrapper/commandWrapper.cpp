@@ -28,3 +28,13 @@ void commandWrapper::setFailure(const std::string &failure)
     responseObject["successful"] = false;
     responseObject["error"] = failure;
 }
+
+void commandWrapper::refreshLoginToken(const std::string uuid)
+{
+    mysql_query(
+        session->MYSQLHandle,
+        "UPDATE users SET resumeSessionCodeSpoil = DATE_ADD(DATE(),INTERVAL 14 DAY) WHERE userid = UuidToBin(%1)"
+    );
+
+    mysql_commit(session->MYSQLHandle);
+}

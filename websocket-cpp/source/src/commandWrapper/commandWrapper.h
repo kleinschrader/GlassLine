@@ -29,6 +29,9 @@ public:
     std::string getJSONString();
 
     virtual void run(const nlohmann::json &args) = 0;
+
+
+    void refreshLoginToken(const std::string uuid);
 };
 
 

@@ -15,8 +15,6 @@ void checkTokenLogin::run(const nlohmann::json &args)
         return;
     }
 
-    
-
     mysql_query(
         session->MYSQLHandle,
         "SELECT UuidFromBin(userid), DATEDIFF(resumeSessionCodeSpoil, DATE()), UuidFromBin(tenant), tenants.globalAdmin \
@@ -44,6 +42,8 @@ void checkTokenLogin::run(const nlohmann::json &args)
         mysql_free_result(result);
         return;
     }
+
+    refreshLoginToken(row[0]);
 
     session->sessionInfo.user_uuid = row[0];
     session->sessionInfo.tenant_uuid = row[2];
