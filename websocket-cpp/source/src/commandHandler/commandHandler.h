@@ -28,6 +28,18 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         {
             cmd = new checkSetupToken;
         }
+        else if(parsedCommand == "checkTokenLogin")
+        {
+            cmd = new checkTokenLogin;
+        }
+        else if(parsedCommand == "createTenant")
+        {
+            cmd = new createTenant;
+        }
+        else if(parsedCommand == "createUser")
+        {
+            cmd = new createUser;
+        }
         else {
             delete cmd;
 
@@ -39,10 +51,18 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
 
             return response.dump();
         }
-        
+
         cmd->setSequence(commandData["seq"]);
         cmd->session = session;
-        cmd->run(commandData);
+        
+        try
+        {
+            cmd->run(commandData);
+        }
+        catch(...)
+        {
+            session->debugOut("Send Malformed Data and execution failed");
+        }
 
         std::string jsonString = cmd->getJSONString();
 
@@ -52,7 +72,7 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
     }
     catch(nlohmann::json::exception& e)
     {
-        if(cmd == 0)
+        if(cmd != 0)
         {
             delete cmd;
         }

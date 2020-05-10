@@ -1,6 +1,6 @@
 #include "sessionHandler.h"
 
-#include "../commandHandler/commandHandler.hpp"
+#include "../commandHandler/commandHandler.h"
 
 #include "../WebSocketServer/WebSocketServer.h"
 

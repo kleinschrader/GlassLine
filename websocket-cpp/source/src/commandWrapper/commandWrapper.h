@@ -9,6 +9,16 @@
 
 #include "../sessionHandler/sessionHandler.h"
 
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/string_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/format.hpp>
+
+#include <cryptopp/sha3.h>
+#include <cryptopp/hex.h>
+
+
 class commandWrapper
 {
 private:
@@ -30,8 +40,11 @@ public:
 
     virtual void run(const nlohmann::json &args) = 0;
 
+    virtual std::string genUUID();
 
-    void refreshLoginToken(const std::string uuid);
+    std::string hashPassord(const std::string &password, const std::string &salt);
+
+    void refreshLoginToken(const std::string &uuid);
 };
 
 

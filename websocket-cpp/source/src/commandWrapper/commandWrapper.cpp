@@ -29,7 +29,7 @@ void commandWrapper::setFailure(const std::string &failure)
     responseObject["error"] = failure;
 }
 
-void commandWrapper::refreshLoginToken(const std::string uuid)
+void commandWrapper::refreshLoginToken(const std::string &uuid)
 {
     mysql_query(
         session->MYSQLHandle,
@@ -37,4 +37,31 @@ void commandWrapper::refreshLoginToken(const std::string uuid)
     );
 
     mysql_commit(session->MYSQLHandle);
+}
+
+std::string commandWrapper::genUUID()
+{
+    return boost::uuids::to_string(boost::uuids::random_generator()());
+}
+
+std::string commandWrapper::hashPassord(const std::string &password, const std::string &salt)
+{
+    std::string postSaltPasswort = password + salt;
+
+    std::string HexString;
+
+    CryptoPP::HexEncoder encoder(new CryptoPP::StringSink(HexString));
+
+    std::string digest;
+
+    CryptoPP::SHA3_256 hash;
+    hash.Update((const u_int8_t*)postSaltPasswort.c_str(), postSaltPasswort.length());
+    digest.resize(hash.DigestSize());
+    hash.Final((u_int8_t*)&digest[0]);
+
+    CryptoPP::Redirector redirector(encoder);
+
+    CryptoPP::StringSource(digest, true, new CryptoPP::Redirector(encoder));
+
+    return HexString;
 }

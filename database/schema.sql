@@ -62,7 +62,8 @@ VALUES
 CREATE TABLE users(
   userid BINARY(16) PRIMARY KEY,
   username varchar(64) UNIQUE,
-  passwd varchar(60),
+  passwd varchar(128),
+  passwdSalt varchar(32),
   tenantAdmin bool,
   resumeSessionCode varchar(128),
   resumeSessionCodeSpoil date,
