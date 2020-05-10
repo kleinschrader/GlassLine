@@ -40,6 +40,10 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         {
             cmd = new createUser;
         }
+        else if(parsedCommand == "finishSetup")
+        {
+            cmd = new finishSetup;
+        }
         else {
             delete cmd;
 

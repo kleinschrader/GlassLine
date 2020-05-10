@@ -51,6 +51,8 @@ public:
     void setFlag(u_int16_t flag, bool newValue);
     bool getFlag(u_int16_t flag);
 
+    void resetFlags();
+
     static void handleMessage(websocketpp::connection_hdl hdl, std::string message, websocketpp::frame::opcode::value opcode, sessionHandler* session ,void* s);
 
     sessionData sessionInfo;

@@ -219,7 +219,8 @@ class WSClient extends EventTarget {
     finishSetup() {
         let requestObj = {}
         requestObj.cmd = 'finishSetup'
-
+        requestObj.seq = this.genSeq()
+        
         this.socket.send(JSON.stringify(requestObj))
     }
 

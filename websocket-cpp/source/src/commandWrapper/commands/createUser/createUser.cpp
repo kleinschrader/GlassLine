@@ -86,8 +86,6 @@ void createUser::run(const nlohmann::json &args)
 
     mysql_query(session->MYSQLHandle, boost::str(query % uuid % usernameEscaped % passwordHash % passwordSalt % tenantAdmin % parsedTenantUUID).c_str());
 
-    std::cout << boost::str(query % uuid % usernameEscaped % passwordHash % passwordSalt % tenantAdmin % parsedTenantUUID).c_str() << std::endl;
-
     mysql_commit(session->MYSQLHandle);
 
     responseObject["successful"] = true;

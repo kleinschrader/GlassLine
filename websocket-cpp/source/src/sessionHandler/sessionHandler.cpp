@@ -52,3 +52,8 @@ void sessionHandler::setFlag(u_int16_t flag, bool newValue)
         flags = flags | ~flag;
     }
  }
+
+ void sessionHandler::resetFlags()
+ {
+    flags = 0;
+ }
