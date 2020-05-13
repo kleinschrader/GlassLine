@@ -25,9 +25,10 @@ namespace sessionFlags
 {
     enum flags
     {
-        FLAG_SETUP_PERMITTED = 1,
-        FLAG_USER_LOGGED_ON = 2,
-        FLAG_ADMIN_TENANT = 4
+        FLAG_SETUP_PERMITTED = 0x1,
+        FLAG_USER_LOGGED_ON = 0x2,
+        FLAG_ADMIN_TENANT = 0x4,
+        FLAG_USER_ADMIN = 0x8
     };
 };
 
