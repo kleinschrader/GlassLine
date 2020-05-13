@@ -65,3 +65,55 @@ std::string commandWrapper::hashPassord(const std::string &password, const std::
 
     return HexString;
 }
+
+bool commandWrapper::getParameter(const nlohmann::json &args, const std::string &name, std::string &buffer)
+{
+    if(!checkArgument(args,name))
+    {
+        return false;
+    }
+
+    if(args[name].type() == nlohmann::json::value_t::string)
+    {
+        buffer = args[name];
+        return true;
+    }
+
+    setFailure("Invalid Type");
+    return false;
+}
+
+bool commandWrapper::getParameter(const nlohmann::json &args, const std::string &name, bool &buffer)
+{
+    if(!checkArgument(args,name))
+    {
+        return false;
+    }
+
+    if(args[name].type() == nlohmann::json::value_t::boolean )
+    {
+        buffer = args[name];
+        return true;
+    }
+
+    setFailure("Invalid Type");
+    return false;
+}
+
+
+bool commandWrapper::getParameter(const nlohmann::json &args, const std::string &name, int &buffer)
+{
+    if(!checkArgument(args,name))
+    {
+        return false;
+    }
+
+    if(args[name].type() == nlohmann::json::value_t::number_integer )
+    {
+        buffer = args[name];
+        return true;
+    }
+
+    setFailure("Invalid Type");
+    return false;
+}

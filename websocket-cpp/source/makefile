@@ -1,40 +1,43 @@
-release: objects/main.o objects/WebSocketServer.o objects/sessionHandler.o objects/commandWrapper.o objects/getSetupRequired.o objects/checkSetupToken.o objects/checkTokenLogin.o objects/createTenant.o objects/createUser.o objects/finishSetup.o
-	g++ -lpthread -lcryptopp -lboost_thread -lmariadb -std=c++14 -o glassline-websocket objects/* ./src/commandHandler/commandHandler.h
-debug: objects-d/main.o objects-d/WebSocketServer.o objects-d/sessionHandler.o objects-d/commandWrapper.o objects-d/getSetupRequired.o objects-d/checkSetupToken.o objects-d/checkTokenLogin.o objects-d/createTenant.o objects-d/createUser.o objects-d/finishSetup.o
+release: objects/main.o objects/WebSocketServer.o objects/sessionHandler.o objects/commandWrapper.o objects/getSetupRequired.o objects/checkSetupToken.o objects/checkTokenLogin.o objects/createTenant.o objects/createUser.o objects/finishSetup.o objects/checkCredLogin.o
+	g++ -lpthread -lcryptopp -lboost_thread -lmariadb -std=c++14 -o glassline-websocket objects/* ./src/commandHandler/commandHandler.h -O2
+debug: objects-d/main.o objects-d/WebSocketServer.o objects-d/sessionHandler.o objects-d/commandWrapper.o objects-d/getSetupRequired.o objects-d/checkSetupToken.o objects-d/checkTokenLogin.o objects-d/createTenant.o objects-d/createUser.o objects-d/finishSetup.o objects-d/checkCredLogin.o
 	g++ -ggdb -lpthread -lcryptopp -lboost_thread -lmariadb -std=c++14 -o glassline-websocket-d objects-d/* ./src/commandHandler/commandHandler.h -DDEBUG
 
 findFiles:
 	find ./ -name '*.cpp'
 
 objects/main.o: main.cpp
-	g++ -c ./main.cpp -o objects/main.o
+	g++ -c ./main.cpp -o objects/main.o -O2
 
 objects/WebSocketServer.o: ./src/WebSocketServer/WebSocketServer.cpp
-	g++ -c ./src/WebSocketServer/WebSocketServer.cpp -o objects/WebSocketServer.o
+	g++ -c ./src/WebSocketServer/WebSocketServer.cpp -o objects/WebSocketServer.o -O2
 
 objects/sessionHandler.o: ./src/sessionHandler/sessionHandler.cpp objects/sessionHandler.o
-	g++ -c ./src/sessionHandler/sessionHandler.cpp -o objects/sessionHandler.o
+	g++ -c ./src/sessionHandler/sessionHandler.cpp -o objects/sessionHandler.o -O2
 
 objects/commandWrapper.o: ./src/commandWrapper/commandWrapper.cpp
-	g++ -c ./src/commandWrapper/commandWrapper.cpp -o objects/commandWrapper.o
+	g++ -c ./src/commandWrapper/commandWrapper.cpp -o objects/commandWrapper.o -O2
 
 objects/getSetupRequired.o: ./src/commandWrapper/commands/getSetupRequired/getSetupRequired.cpp
-	g++ -c ./src/commandWrapper/commands/getSetupRequired/getSetupRequired.cpp -o objects/getSetupRequired.o
+	g++ -c ./src/commandWrapper/commands/getSetupRequired/getSetupRequired.cpp -o objects/getSetupRequired.o -O2
 
 objects/checkSetupToken.o: ./src/commandWrapper/commands/checkSetupToken/checkSetupToken.cpp
-	g++ -c ./src/commandWrapper/commands/checkSetupToken/checkSetupToken.cpp -o objects/checkSetupToken.o
+	g++ -c ./src/commandWrapper/commands/checkSetupToken/checkSetupToken.cpp -o objects/checkSetupToken.o -O2
 
 objects/checkTokenLogin.o: ./src/commandWrapper/commands/checkTokenLogin/checkTokenLogin.cpp
-	g++ -c ./src/commandWrapper/commands/checkTokenLogin/checkTokenLogin.cpp -o objects/checkTokenLogin.o
+	g++ -c ./src/commandWrapper/commands/checkTokenLogin/checkTokenLogin.cpp -o objects/checkTokenLogin.o -O2
 
 objects/createTenant.o: ./src/commandWrapper/commands/createTenant/createTenant.cpp
-	g++ -c ./src/commandWrapper/commands/createTenant/createTenant.cpp -o objects/createTenant.o
+	g++ -c ./src/commandWrapper/commands/createTenant/createTenant.cpp -o objects/createTenant.o -O2
 
 objects/createUser.o: ./src/commandWrapper/commands/createUser/createUser.cpp
-	g++ -c ./src/commandWrapper/commands/createUser/createUser.cpp -o objects/createUser.o
+	g++ -c ./src/commandWrapper/commands/createUser/createUser.cpp -o objects/createUser.o -O2
 
 objects/finishSetup.o: ./src/commandWrapper/commands/finishSetup/finishSetup.cpp
-	g++ -c ./src/commandWrapper/commands/finishSetup/finishSetup.cpp -o objects/finishSetup.o
+	g++ -c ./src/commandWrapper/commands/finishSetup/finishSetup.cpp -o objects/finishSetup.o -O2
+
+objects/checkCredLogin.o: ./src/commandWrapper/commands/checkCredLogin/checkCredLogin.cpp
+	g++ -c  ./src/commandWrapper/commands/checkCredLogin/checkCredLogin.cpp -o objects/checkCredLogin.o -O2
 
 objects-d/main.o: main.cpp
 	g++ -ggdb -c ./main.cpp -o objects-d/main-d.o -DDEBUG
@@ -65,6 +68,9 @@ objects-d/createUser.o: ./src/commandWrapper/commands/createUser/createUser.cpp
 
 objects-d/finishSetup.o: ./src/commandWrapper/commands/finishSetup/finishSetup.cpp
 	g++ -ggdb -c ./src/commandWrapper/commands/finishSetup/finishSetup.cpp -o objects-d/finishSetup.o -DDEBUG
+
+objects-d/checkCredLogin.o: ./src/commandWrapper/commands/checkCredLogin/checkCredLogin.cpp
+	g++ -ggdb -c  ./src/commandWrapper/commands/checkCredLogin/checkCredLogin.cpp -o objects-d/checkCredLogin.o -DDEBUG
 
 clean:
 	rm objects-d/* || true

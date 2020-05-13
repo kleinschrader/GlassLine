@@ -56,9 +56,10 @@ void createUser::run(const nlohmann::json &args)
     std::string passwordSalt;
     passwordSalt.resize(32);
 
+    srand (time(NULL));
     for(int i = 0; i < 32; i++)
     {
-        passwordSalt[i] += hexGenString[random() % 17];
+        passwordSalt[i] = hexGenString[rand() % 17];
     }
 
     

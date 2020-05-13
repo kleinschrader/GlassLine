@@ -18,6 +18,7 @@
 #include <cryptopp/sha3.h>
 #include <cryptopp/hex.h>
 
+#include <liboath/oath.h>
 
 class commandWrapper
 {
@@ -93,6 +94,39 @@ public:
      * @param uuid The uuid of the user where the token should be refreshed
     */
     void refreshLoginToken(const std::string &uuid);
+
+    /**
+     * Get a parameter with strict type casting
+     * 
+     * @param args a reference to the request json object
+     * @param name The name of the variable to get
+     * @param buffer an std::string to store the data in
+     * 
+     * @returns True if paramter was successfully recieved
+    */
+    bool getParameter(const nlohmann::json &args, const std::string &name, std::string &buffer);
+
+    /**
+     * Get a parameter with strict type casting
+     * 
+     * @param args a reference to the request json object
+     * @param name The name of the variable to get
+     * @param buffer an bool to store the data in
+     * 
+     * @returns True if paramter was successfully recieved
+    */
+    bool getParameter(const nlohmann::json &args, const std::string &name, bool &buffer);
+
+    /**
+     * Get a parameter with strict type casting
+     * 
+     * @param args a reference to the request json object
+     * @param name The name of the variable to get
+     * @param buffer an int to store the data in
+     * 
+     * @returns True if paramter was successfully recieved
+    */
+    bool getParameter(const nlohmann::json &args, const std::string &name, int &buffer);
 };
 
 

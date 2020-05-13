@@ -68,7 +68,7 @@ CREATE TABLE users(
   resumeSessionCode varchar(128),
   resumeSessionCodeSpoil date,
   tenant BINARY(16),
-  mfakey BINARY(32)
+  mfakey varchar(32)
 );
 
 -- Creates a table for servers
