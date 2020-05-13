@@ -14,6 +14,7 @@ To keep the connection alive send an empty packet every x secounds.
 Example json: ``{"cmd": "checkTokenLogin","token": "TOKEN","seq": 100}`
 
 ### Function checkTokenLogin
+
 **Call handle**: checkTokenLogin
 **token**: A 128 Byte Token to login automaticly 
 **Request Exmaple** : {}
@@ -21,6 +22,7 @@ Example json: ``{"cmd": "checkTokenLogin","token": "TOKEN","seq": 100}`
 **Description**: This is used when the user decides to stay logged in, in that case instead of using a username or password login happes via a token saved in the browsers cookies.
 
 ### Function checkCredLogin
+
 **Call handle**: checkCredLogin
 **username**: The Username of the User
 **password**: The Plaintext Password of the User
