@@ -9,5 +9,6 @@
 #include "commands/createTenant/createTenant.h"
 #include "commands/createUser/createUser.h"
 #include "commands/finishSetup/finishSetup.h"
+#include "commands/checkCredLogin/checkCredLogin.h"
 
 #endif

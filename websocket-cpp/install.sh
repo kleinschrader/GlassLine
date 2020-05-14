@@ -8,4 +8,4 @@ pacman -S gcc make git cmake --noconfirm
 pacman -S mariadb-libs --noconfirm
  
 # install the boost and other libarys
-pacman -S boost boost-libs libffi crypto++ --noconfirm
+pacman -S boost boost-libs libffi crypto++ liboauth oath-toolkit --noconfirm

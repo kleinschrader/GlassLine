@@ -38,6 +38,10 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         {
             cmd = new checkTokenLogin;
         }
+        else if(parsedCommand == "checkCredLogin")
+        {
+            cmd = new checkCredLogin;
+        }
         else if(parsedCommand == "createTenant")
         {
             cmd = new createTenant;
@@ -73,14 +77,7 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         cmd->session = session;
         
         //Attempt code execution 
-        try
-        {
-            cmd->run(commandData);
-        }
-        catch(...)
-        {
-            session->debugOut("Send Malformed Data and execution failed");
-        }
+        cmd->run(commandData);
 
         //get the json string from the cmd object
         std::string jsonString = cmd->getJSONString();
