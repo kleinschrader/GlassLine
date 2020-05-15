@@ -13,11 +13,15 @@ std::string commandWrapper::getJSONString()
 
 bool commandWrapper::checkArgument(const nlohmann::json &args, const std::string &expectedArg)
 {
+    // checks if the json object contains the value passed in the string "expected"
     if(args.contains(expectedArg))
     {
+        // returns true if its contained,
+        // a return also stop code execution so we dont need an else clause
         return true;
     }
 
+    // set the failure to missing argument and return false
     setFailure("Missing Argument");
 
     return false;
@@ -25,22 +29,34 @@ bool commandWrapper::checkArgument(const nlohmann::json &args, const std::string
 
 void commandWrapper::setFailure(const std::string &failure)
 {
+    // store the failure in the response object and set failure to false
     responseObject["successful"] = false;
     responseObject["error"] = failure;
 }
 
 void commandWrapper::refreshLoginToken(const std::string &uuid)
 {
+    // prepare a buffer for the escaped uuid
+    char* escapedUUID[uuid.length() * 2 + 1];
+ 
+    // escaped the string to prevent SQL Injection
+    mysql_real_escape_string(session->MYSQLHandle, escapedUUID,uuid.c_str(),uuid.length());
+
+    //! TODO: Implement the actual formating
+
+    //update the expirery of the resumeCode in the database
     mysql_query(
         session->MYSQLHandle,
-        "UPDATE users SET resumeSessionCodeSpoil = DATE_ADD(DATE(),INTERVAL 14 DAY) WHERE userid = UuidToBin(%1)"
+        "UPDATE users SET resumeSessionCodeSpoil = DATE_ADD(DATE(),INTERVAL 14 DAY) WHERE userid = UuidToBin('%1')"
     );
 
+    // save the changes to the database
     mysql_commit(session->MYSQLHandle);
 }
 
 std::string commandWrapper::genUUID()
 {
+    //generate a random uuid, convert it to a string and return it
     return boost::uuids::to_string(boost::uuids::random_generator()());
 }
 
