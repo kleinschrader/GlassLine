@@ -35,7 +35,22 @@ class LoginScreen extends React.Component {
                 document.cookie = ("LOGINTOKEN=" + r.detail.data.token + ";expires=" + cookieExpiryDate.toUTCString())
             }
 
-            let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : 'mainApp'}});
+            let nScreen;
+
+            switch(r.detail.data.mfa)
+            {
+                case 'setup':
+                    nScreen = "setupMFA";
+                    break;
+                case 'verify':
+                    nScreen = "verifyMFA";
+                    break;
+                case 'none':
+                    nScreen = "mainApp";
+                    break;
+            }
+
+            let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : nScreen}});
             document.dispatchEvent(screenEvent)
         }
     }

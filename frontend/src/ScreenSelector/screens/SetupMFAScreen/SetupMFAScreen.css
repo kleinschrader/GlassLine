@@ -1,0 +1,53 @@
+.SetupMFAScreen {
+    background-color: rgb(66, 66, 66);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    color: #fff;
+    margin: 0;
+    text-align: center;
+}
+
+h3 {
+    color: #fff;
+    margin: 1rem 0 0 0;
+    text-align: center;
+}
+
+.LinkCenterBox {
+    display: flex;
+}
+
+.LinkCenterBox .LinkCenterBoxSpace {
+    flex-grow: 1;
+}
+
+.MFAInfoLink {
+    text-decoration: none;
+    color: #999;
+    border: none;
+    border-bottom: dotted;
+    border-width: 1px;
+    border-color: #999;
+    text-align: center;
+}
+
+p {
+    margin: 1rem 0 ß ß;
+    color: #fff;
+    line-height: 1em;
+}
+
+li ul {
+    margin: 0.2em;
+    color: #fff;
+}
+
+img {
+    flex-grow: 1;
+    object-fit: contain;
+}
