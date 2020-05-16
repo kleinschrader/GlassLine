@@ -52,6 +52,7 @@ void checkTokenLogin::run(const nlohmann::json &args)
     session->setFlag(sessionFlags::FLAG_USER_LOGGED_ON,true);
 
     responseObject["successful"] = true;
+    responseObject["mfa"] = "none";
     mysql_free_result(result);
 };
 

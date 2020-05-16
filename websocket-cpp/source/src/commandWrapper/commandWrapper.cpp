@@ -42,12 +42,14 @@ void commandWrapper::refreshLoginToken(const std::string &uuid)
     // escaped the string to prevent SQL Injection
     mysql_real_escape_string(session->MYSQLHandle, escapedUUID,uuid.c_str(),uuid.length());
 
-    //! TODO: Implement the actual formating
+    boost::format query(
+    "UPDATE users SET resumeSessionCodeSpoil = DATE_ADD(DATE(),INTERVAL 14 DAY) WHERE userid = UuidToBin('%1')"
+    );
 
     //update the expirery of the resumeCode in the database
     mysql_query(
         session->MYSQLHandle,
-        "UPDATE users SET resumeSessionCodeSpoil = DATE_ADD(DATE(),INTERVAL 14 DAY) WHERE userid = UuidToBin('%1')"
+        boost::str(query % std::string(escapedUUID)).c_str()
     );
 
     // save the changes to the database
