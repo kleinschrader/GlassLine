@@ -39,7 +39,7 @@ void checkCredLogin::run(const nlohmann::json &args)
     mysql_real_escape_string(session->MYSQLHandle,usernameEscaped,username.c_str(),username.length());
 
     // run the sql query
-    mysql_query(session->MYSQLHandle, boost::str(query % usernameEscaped).c_str());
+    mysql_query(session->MYSQLHandle, boost::str(query % std::string(usernameEscaped)).c_str());
     
     // this is the result buffer where all data and meta from the query is stored
     MYSQL_RES *result = mysql_store_result(session->MYSQLHandle);

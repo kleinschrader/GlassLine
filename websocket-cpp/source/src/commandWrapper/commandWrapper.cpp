@@ -37,7 +37,7 @@ void commandWrapper::setFailure(const std::string &failure)
 void commandWrapper::refreshLoginToken(const std::string &uuid)
 {
     // prepare a buffer for the escaped uuid
-    char* escapedUUID[uuid.length() * 2 + 1];
+    char escapedUUID[uuid.length() * 2 + 1];
  
     // escaped the string to prevent SQL Injection
     mysql_real_escape_string(session->MYSQLHandle, escapedUUID,uuid.c_str(),uuid.length());
