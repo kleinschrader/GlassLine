@@ -3,17 +3,32 @@ import QRCode from 'qrcode'
 
 import './SetupMFAScreen.css';
 
+import base32encode from 'base32-encode';
 
 
 class SetupMFAScreen extends React.Component {
     
     componentDidMount() {
-        let newURL;
+        
+        let setState = this.setState.bind(this)
 
-        let qrPromise = QRCode.toDataURL('Test', (err, url) => {
-            newURL = url;
-            this.setState({imageData:url});
+        document.WSClient.generateMFASecret().addEventListener('complete', function(e) {  
+            let secretEncoded = (base32encode((new TextEncoder).encode(e.detail.data.MFASecret),'RFC4648'))
+
+            let oathURI = "otpauth://hotp/Glassline:" + encodeURI(document.globalVars.username) + "?secret+" + secretEncoded + "&issuer=Glassline%20Monitroing"
+
+            let qrPromise = QRCode.toDataURL(oathURI, (err, url) => {
+                setState({imageData:url});
+            })
         })
+
+
+        
+    }
+
+    handleContinue() {
+        let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : "verify"}});
+        document.dispatchEvent(screenEvent)
     }
 
     state = {
@@ -43,6 +58,8 @@ class SetupMFAScreen extends React.Component {
                 </li>
                 <h3>2.) Scan the QRCode using an authenticator</h3>
                 <img alt="" src={this.state.imageData} />
+                <p>If you added the Token to your phone press continue...</p>
+                <button onClick={this.handleContinue}>Continue</button>
             </div>
         )
     }

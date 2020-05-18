@@ -10,5 +10,6 @@
 #include "commands/createUser/createUser.h"
 #include "commands/finishSetup/finishSetup.h"
 #include "commands/checkCredLogin/checkCredLogin.h"
+#include "commands/generateMFASecret/generateMFASecret.h"
 
 #endif

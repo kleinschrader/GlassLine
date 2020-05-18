@@ -9,6 +9,12 @@ class App extends React.Component {
   constructor(props) {
     super(props)
 
+    if(document.globalVars == null)
+    {
+      document.globalVars = {}
+      document.globalVars.username = ""
+    }
+
     if(document.WSClient == null)
     {
       document.WSClient = new WSClient();

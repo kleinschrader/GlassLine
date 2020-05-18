@@ -89,11 +89,13 @@ void checkCredLogin::run(const nlohmann::json &args)
         {
             // user does not have two fa setup
             responseObject["mfa"] = "setup";
+            session->setFlag(sessionFlags::FLAG_MFA_SETUP_PERMITTED,true);
         }
         else
         {
             // user has two fa setup
             responseObject["mfa"] = "verify";
+            session->sessionInfo.mfa_key = row[5];
         }
     }
     else

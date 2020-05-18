@@ -54,6 +54,10 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         {
             cmd = new finishSetup;
         }
+        else if(parsedCommand == "generateMFASecret")
+        {
+            cmd = new generateMFASecret;
+        }
         else {
             //should the command not be recogniesed run this code
 

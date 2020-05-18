@@ -19,6 +19,8 @@ class LoginScreen extends React.Component {
 
         let checkCredRequest = document.WSClient.checkCredLogin(e.target.username.value,e.target.password.value,e.target.keepLoggedIn.checked)
         checkCredRequest.addEventListener('complete',this.handleCompleteLogin)
+
+        document.globalVars.username = e.target.username.value
     }
 
     handleCompleteLogin(r) {

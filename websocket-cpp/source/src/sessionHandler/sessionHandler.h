@@ -28,7 +28,8 @@ namespace sessionFlags
         FLAG_SETUP_PERMITTED = 0x1,
         FLAG_USER_LOGGED_ON = 0x2,
         FLAG_ADMIN_TENANT = 0x4,
-        FLAG_USER_ADMIN = 0x8
+        FLAG_USER_ADMIN = 0x8,
+        FLAG_MFA_SETUP_PERMITTED = 0x10
     };
 };
 
@@ -36,6 +37,7 @@ struct sessionData
 {
     std::string user_uuid = "";
     std::string tenant_uuid = "";
+    std::string mfa_key = "";
 };
 
 class sessionHandler

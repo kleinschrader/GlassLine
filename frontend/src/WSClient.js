@@ -216,6 +216,19 @@ class WSClient extends EventTarget {
         return retObj;
     }
 
+    generateMFASecret() {
+        let requestObj = {}
+        requestObj.cmd = 'generateMFASecret'
+        requestObj.seq = this.genSeq()
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+        return retObj;
+    }
+
     finishSetup() {
         let requestObj = {}
         requestObj.cmd = 'finishSetup'
