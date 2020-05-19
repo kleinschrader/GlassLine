@@ -11,5 +11,6 @@
 #include "commands/finishSetup/finishSetup.h"
 #include "commands/checkCredLogin/checkCredLogin.h"
 #include "commands/generateMFASecret/generateMFASecret.h"
+#include "commands/verifyOTP/verifyOTP.h"
 
 #endif

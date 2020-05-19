@@ -13,11 +13,11 @@ class SetupMFAScreen extends React.Component {
         let setState = this.setState.bind(this)
 
         document.WSClient.generateMFASecret().addEventListener('complete', function(e) {  
-            let secretEncoded = (base32encode((new TextEncoder).encode(e.detail.data.MFASecret),'RFC4648'))
+            let secretEncoded = (base32encode((new TextEncoder()).encode(e.detail.data.MFASecret),'RFC4648'))
 
-            let oathURI = "otpauth://hotp/Glassline:" + encodeURI(document.globalVars.username) + "?secret+" + secretEncoded + "&issuer=Glassline%20Monitroing"
+            let oathURI = "otpauth://totp/Glassline:" + encodeURI(document.globalVars.username) + "?secret=" + secretEncoded + "&issuer=Glassline%20Monitroing"
 
-            let qrPromise = QRCode.toDataURL(oathURI, (err, url) => {
+            QRCode.toDataURL(oathURI, (err, url) => {
                 setState({imageData:url});
             })
         })
@@ -27,7 +27,7 @@ class SetupMFAScreen extends React.Component {
     }
 
     handleContinue() {
-        let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : "verify"}});
+        let screenEvent = new CustomEvent('screenChange', {detail : {newScreen : "verifyMFA"}});
         document.dispatchEvent(screenEvent)
     }
 

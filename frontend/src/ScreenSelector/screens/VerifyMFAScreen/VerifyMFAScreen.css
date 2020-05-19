@@ -1,0 +1,30 @@
+.VerifyMFAScreen {
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(66, 66, 66);
+}
+
+h2 {
+    color: #fff;
+    margin: 0;
+    text-align: center;
+}
+
+.Centerbox {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.CenterboxSpacer {
+    flex-grow: 1;
+}
+
+.Centerbox input {
+    margin: 2rem;
+    text-align: center;
+}
+
+.Centerbox button {
+    margin: 2rem;
+}

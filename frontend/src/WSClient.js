@@ -229,6 +229,20 @@ class WSClient extends EventTarget {
         return retObj;
     }
 
+    verifyOTP(otp) {
+        let requestObj = {}
+        requestObj.cmd = 'verifyOTP'
+        requestObj.seq = this.genSeq()
+        requestObj.otp = otp
+
+        let retObj = new WSClient_Request()
+        retObj.seq = requestObj.seq
+        this.openRequests.push(retObj) 
+
+        this.socket.send(JSON.stringify(requestObj))
+        return retObj;
+    }
+
     finishSetup() {
         let requestObj = {}
         requestObj.cmd = 'finishSetup'

@@ -26,6 +26,7 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         std::string parsedCommand = commandData["cmd"];
 
         //create a fitting class based on the command of the client
+        //! 2020-05-19: There has to be a better way than this...
         if(parsedCommand == "getSetupRequired")
         {
             cmd = new getSetupRequired;
@@ -57,6 +58,10 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         else if(parsedCommand == "generateMFASecret")
         {
             cmd = new generateMFASecret;
+        }
+        else if(parsedCommand == "verifyOTP")
+        {
+            cmd = new verifyOTP;
         }
         else {
             //should the command not be recogniesed run this code

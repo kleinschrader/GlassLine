@@ -7,6 +7,7 @@ import ConnectionLostScreen from './screens/ConnectionLostScreen'
 import SetupScreen from './screens/SetupScreen'
 import SetupInputScreen from './screens/SetupInputScreen'
 import SetupMFAScreen from './screens/SetupMFAScreen'
+import VerifyMFAScreen from './screens/VerifyMFAScreen'
 
 class ScreenSelector extends React.Component {
     constructor(props) {
@@ -105,6 +106,10 @@ class ScreenSelector extends React.Component {
             case 'setupMFA':
                 return(
                     <SetupMFAScreen />
+                )
+            case 'verifyMFA':
+                return(
+                    <VerifyMFAScreen />
                 )
             default:
                 return(

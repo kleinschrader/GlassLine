@@ -10,6 +10,12 @@ void getSetupRequired::run(const nlohmann::json &args)
 
     MYSQL_RES *result = mysql_store_result(session->MYSQLHandle);
    
+    if(result == NULL)
+    {
+        setFailure("DB Error");
+        return;
+    }
+
     MYSQL_ROW row;
     row = mysql_fetch_row(result);
 
