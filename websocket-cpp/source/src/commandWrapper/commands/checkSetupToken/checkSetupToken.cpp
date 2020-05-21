@@ -2,23 +2,20 @@
 
 void checkSetupToken::run(const nlohmann::json &args)
 {
+    std::string token;
+    getParameter(args,"token",token);
 
     if(!checkArgument(args,"token"))
     {
         return;
     }
 
-    mysql_query(
-        session->MYSQLHandle,
-        "SELECT UuidFromBin(setupToken) AS setupToken from settings"
-    );
+    mysqlWrapper sql(session->MYSQLHandle,"SELECT UuidFromBin(setupToken) AS setupToken from settings");
 
-    MYSQL_RES *result = mysql_store_result(session->MYSQLHandle);
+    sql.runQuery();
    
-    MYSQL_ROW row;
-    row = mysql_fetch_row(result);
 
-    if(args["token"] == row[0])
+    if(token == sql[0]["setupToken"])
     {
         session->setFlag(sessionFlags::FLAG_SETUP_PERMITTED, true);
         responseObject["successful"] = true;
@@ -27,6 +24,4 @@ void checkSetupToken::run(const nlohmann::json &args)
     {
         setFailure("Wrong Token");
     }
-
-    mysql_free_result(result);
 }

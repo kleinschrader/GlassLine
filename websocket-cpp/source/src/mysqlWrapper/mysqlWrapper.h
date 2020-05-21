@@ -57,12 +57,15 @@ public:
     void addFormat(const char* value);
     void addFormat(int value);
     void addFormat(bool value);
+    void addFormat(std::string value);
 
     void escapeStringAndFormat(const char* string);
 
     void runQuery();
 
     mysqlSubWrapper operator[](int lookup);
+
+    bool encounterdError = false;
 
     unsigned int numberRows;
 };

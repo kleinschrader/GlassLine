@@ -30,26 +30,12 @@ void checkCredLogin::run(const nlohmann::json &args)
 
     sql.runQuery();
 
-    // if its NULL it means we encounterd an backend error
-    /*if(result == NULL)
-    {
-        setFailure("Backend Error");
-        session->debugOut("DB Error: " + std::string(mysql_error(session->MYSQLHandle)));
-        return;
-    }*/
-
     // if we dont get exactly one result, we know such a user does not exist
     if(sql.numberRows != 1)
     {
         setFailure("USER/PASS Invalid");
         return;
     }
-
-    // row is an array wehre all the data is stored
-    // usually you call it in a for loop,
-    // however since we only got one row we can run it outside
-
-
 
     // hash the password using the salt
     std::string hashedPW = hashPassord(password,sql[0]["passwdSalt"]);

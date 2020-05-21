@@ -15,6 +15,11 @@ void mysqlWrapper::addFormat(bool value)
     *_query = *_query % (value ? 1 : 0);
 }
 
+void mysqlWrapper::addFormat(std::string value)
+{
+    *_query = *_query % value;
+}
+
 mysqlWrapper::mysqlWrapper(MYSQL *handle, const char* query)
 {
     _handle = handle;
@@ -23,6 +28,8 @@ mysqlWrapper::mysqlWrapper(MYSQL *handle, const char* query)
 
 mysqlWrapper::~mysqlWrapper()
 {
+    _mtex.lock();
+    _mtex.unlock();
     delete _query;
     mysql_free_result(_result);
 }
@@ -47,9 +54,24 @@ void mysqlWrapper::_runQuery()
         return;
     }
 
-    mysql_query(_handle,boost::str(*_query).c_str());
+    int returnCode = mysql_query(_handle,boost::str(*_query).c_str());
+
+    if(returnCode != 0)
+    {
+        std::cout << "SQL Query Error: " << mysql_error(_handle) << std::endl;
+        bool encounterdError = true;
+        _mtex.unlock();
+        return;
+    }
 
     _result = mysql_store_result(_handle);
+
+    if(_result == 0)
+    {
+        _mtex.unlock();
+        mysql_commit(_handle);
+        return;
+    }
 
     numberOfFields = mysql_num_fields(_result);
     numberRows = mysql_num_rows(_result);
@@ -71,6 +93,7 @@ void mysqlWrapper::_runQuery()
         rows[i] = mysql_fetch_row(_result);
     }
 
+    mysql_commit(_handle);
 
     _mtex.unlock();
 }

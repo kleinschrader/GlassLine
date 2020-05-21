@@ -2,44 +2,25 @@
 
 void createTenant::run(const nlohmann::json &args)
 {
-    if(!checkArgument(args, "tenantname"))
-    {
-        return;
-    }
+    std::string tenantname;
+    bool useMFA;
+    bool globalAdmin;
 
-    if(!checkArgument(args, "useMFA"))
-    {
-        return;
-    }
+    getParameter(args,"tenantname",tenantname);
+    getParameter(args,"useMFA",useMFA);
+    getParameter(args,"globalAdmin",globalAdmin);
 
-    if(!checkArgument(args,"globalAdmin"))
-    {
-        return;
-    }
-
-    int useMFA = args["useMFA"] ? 1 : 0;
-    int globalAdmin = args["globalAdmin"] ? 1 : 0;
-
-    std::string tenantname = args["tenantname"];
-
-    char* tenantnameEscaped = new char[tenantname.length() + 1];
-
-    mysql_real_escape_string(session->MYSQLHandle,tenantnameEscaped,tenantname.c_str(),tenantname.length());
+    mysqlWrapper sql(session->MYSQLHandle,"INSERT INTO tenants(tenantid,tenantname,globalAdmin,forceMFA) \
+         VALUES (UuidToBin('%1%'),'%2%',%3%,%4%)");
 
     std::string uuid = genUUID();
     responseObject["uuid"] = uuid;
 
-    std::string query = "INSERT INTO tenants(tenantid,tenantname,globalAdmin,forceMFA) \
-         VALUES (UuidToBin('%1%'),'%2%',%3%,%4%)";
     
+    sql.addFormat(uuid);
+    sql.escapeStringAndFormat(tenantname.c_str());
+    sql.addFormat(globalAdmin);
+    sql.addFormat(useMFA);
 
-    std::string finalQuery = boost::str((boost::format(query) % (uuid) % tenantnameEscaped % globalAdmin % useMFA));
-
-    std::cout << finalQuery << std::endl;
-
-    mysql_query(session->MYSQLHandle,finalQuery.c_str());
-
-    delete [] tenantnameEscaped;
-
-    mysql_commit(session->MYSQLHandle);
+    sql.runQuery();
 }
