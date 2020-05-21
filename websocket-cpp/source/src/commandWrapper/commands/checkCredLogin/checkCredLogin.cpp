@@ -12,9 +12,8 @@ void checkCredLogin::run(const nlohmann::json &args)
     getParameter(args,"password",password);
     getParameter(args,"keepLoggedIn",keepLoggedIn);
 
-    // THE SQL query as a format object, all %NUMBER% will be replaced
-    boost::format query("SELECT \
-    UuidFromBin(users.userid),users.passwd,users.passwdSalt,users.tenantAdmin, UuidFromBin(users.tenant), users.mfakey , tenants.globalAdmin, tenants.forceMFA \
+    mysqlWrapper sql(session->MYSQLHandle,"SELECT \
+    UuidFromBin(users.userid) as userid,users.passwd,users.passwdSalt,users.tenantAdmin, UuidFromBin(users.tenant) as tenant, users.mfakey ,tenants.globalAdmin, tenants.forceMFA \
     FROM users \
     LEFT JOIN tenants\
     ON users.tenant = tenants.tenantid \
@@ -27,37 +26,21 @@ void checkCredLogin::run(const nlohmann::json &args)
         return;
     }
 
-    // define a buffer for the username but escaped for mysql
-    // it needs to be twice as big + 1
-    //
-    // the reason for this is that if all caracters need to be escaped,
-    // we need and extra backslash
-    // and at the end we still need the \0 caracter
-    char usernameEscaped[username.length() * 2 + 1];
+    sql.escapeStringAndFormat(username.c_str());
 
-    //escape the username and store it in the escaped buffer
-    mysql_real_escape_string(session->MYSQLHandle,usernameEscaped,username.c_str(),username.length());
-
-    // run the sql query
-    mysql_query(session->MYSQLHandle, boost::str(query % std::string(usernameEscaped)).c_str());
-    
-    // this is the result buffer where all data and meta from the query is stored
-    MYSQL_RES *result = mysql_store_result(session->MYSQLHandle);
+    sql.runQuery();
 
     // if its NULL it means we encounterd an backend error
-    if(result == NULL)
+    /*if(result == NULL)
     {
         setFailure("Backend Error");
         session->debugOut("DB Error: " + std::string(mysql_error(session->MYSQLHandle)));
         return;
-    }
+    }*/
 
     // if we dont get exactly one result, we know such a user does not exist
-    if(mysql_num_rows(result) != 1)
+    if(sql.numberRows != 1)
     {
-        //delete sql buffer
-        mysql_free_result(result);
-
         setFailure("USER/PASS Invalid");
         return;
     }
@@ -65,27 +48,24 @@ void checkCredLogin::run(const nlohmann::json &args)
     // row is an array wehre all the data is stored
     // usually you call it in a for loop,
     // however since we only got one row we can run it outside
-    MYSQL_ROW row;
-    row = mysql_fetch_row(result);
+
+
 
     // hash the password using the salt
-    std::string hashedPW = hashPassord(password,row[2]);
+    std::string hashedPW = hashPassord(password,sql[0]["passwdSalt"]);
 
     // run this code if the password does not match up with the one in the database
-    if(hashedPW != std::string(row[1]))
+    if(hashedPW != sql[0]["passwd"])
     {
-        // delete sql buffer
-        mysql_free_result(result);
-
         setFailure("USER/PASS Invalid");
         return;
     }
 
     // check if tenant forces 2fa
-    if(atoi(row[7]) == 1)
+    if(atoi( sql[0]["forceMFA"] ) == 1)
     {
         // check if user has 2fa setup
-        if(row[5] == NULL)
+        if( sql[0]["mfakey"] == NULL)
         {
             // user does not have two fa setup
             responseObject["mfa"] = "setup";
@@ -95,7 +75,7 @@ void checkCredLogin::run(const nlohmann::json &args)
         {
             // user has two fa setup
             responseObject["mfa"] = "verify";
-            session->sessionInfo.mfa_key = row[5];
+            session->sessionInfo.mfa_key = sql[0]["mfakey"];
         }
     }
     else
@@ -106,16 +86,13 @@ void checkCredLogin::run(const nlohmann::json &args)
     }
     
     // save the user and tenant info to the session
-    session->sessionInfo.user_uuid = row[0];
-    session->sessionInfo.tenant_uuid = row[2];
+    session->sessionInfo.user_uuid = sql[0]["userid"];
+    session->sessionInfo.tenant_uuid = sql[0]["tenant"];
 
     // set flag based on the data in the database
-    session->setFlag(sessionFlags::FLAG_USER_ADMIN, (atoi(row[3]) != 0));
-    session->setFlag(sessionFlags::FLAG_ADMIN_TENANT,(atoi(row[6]) != 0));
+    session->setFlag(sessionFlags::FLAG_USER_ADMIN, (atoi(sql[0]["tenantAdmin"]) != 0));
+    session->setFlag(sessionFlags::FLAG_ADMIN_TENANT,(atoi(sql[0]["globalAdmin"]) != 0));
     
 
     responseObject["successful"] = true;
-
-    // delete sql buffer
-    mysql_free_result(result);
 }

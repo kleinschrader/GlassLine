@@ -22,6 +22,8 @@
 
 #include <liboath/oath.h>
 
+#include "../mysqlWrapper/mysqlWrapper.h"
+
 class commandWrapper
 {
 private:
