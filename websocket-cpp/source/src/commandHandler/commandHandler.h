@@ -71,6 +71,10 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         {
             cmd = new getTenantServer;
         }
+        else if(parsedCommand == "getAllServers")
+        {
+            cmd = new getAllServers;
+        }
         else {
             //should the command not be recogniesed run this code
 

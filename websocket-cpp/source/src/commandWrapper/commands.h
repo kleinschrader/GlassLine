@@ -14,5 +14,6 @@
 #include "commands/verifyOTP/verifyOTP.h"
 #include "commands/getTenants/getTenants.h"
 #include "commands/getTenantServer/getTenantServer.h"
+#include "commands/getAllServers/getAllServers.h"
 
 #endif
