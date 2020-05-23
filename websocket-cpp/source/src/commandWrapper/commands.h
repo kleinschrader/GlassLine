@@ -13,5 +13,6 @@
 #include "commands/generateMFASecret/generateMFASecret.h"
 #include "commands/verifyOTP/verifyOTP.h"
 #include "commands/getTenants/getTenants.h"
+#include "commands/getTenantServer/getTenantServer.h"
 
 #endif

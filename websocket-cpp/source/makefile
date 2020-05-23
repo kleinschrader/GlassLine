@@ -1,6 +1,6 @@
-release: objects/main.o objects/WebSocketServer.o objects/sessionHandler.o objects/commandWrapper.o objects/getSetupRequired.o objects/checkSetupToken.o objects/checkTokenLogin.o objects/createTenant.o objects/createUser.o objects/finishSetup.o objects/checkCredLogin.o objects/generateMFASecret.o objects/verifyOTP.o objects/mysqlWrapper.o objects/getTenants.o
+release: objects/main.o objects/WebSocketServer.o objects/sessionHandler.o objects/commandWrapper.o objects/getSetupRequired.o objects/checkSetupToken.o objects/checkTokenLogin.o objects/createTenant.o objects/createUser.o objects/finishSetup.o objects/checkCredLogin.o objects/generateMFASecret.o objects/verifyOTP.o objects/mysqlWrapper.o objects/getTenants.o objects/getTenantServer.o
 	g++ -lpthread -lcryptopp -lboost_thread -lmariadb -loath -std=c++14 -o glassline-websocket objects/* ./src/commandHandler/commandHandler.h -O2 
-debug: objects-d/main.o objects-d/WebSocketServer.o objects-d/sessionHandler.o objects-d/commandWrapper.o objects-d/getSetupRequired.o objects-d/checkSetupToken.o objects-d/checkTokenLogin.o objects-d/createTenant.o objects-d/createUser.o objects-d/finishSetup.o objects-d/checkCredLogin.o objects-d/generateMFASecret.o objects-d/verifyOTP.o objects-d/mysqlWrapper.o objects-d/getTenants.o
+debug: objects-d/main.o objects-d/WebSocketServer.o objects-d/sessionHandler.o objects-d/commandWrapper.o objects-d/getSetupRequired.o objects-d/checkSetupToken.o objects-d/checkTokenLogin.o objects-d/createTenant.o objects-d/createUser.o objects-d/finishSetup.o objects-d/checkCredLogin.o objects-d/generateMFASecret.o objects-d/verifyOTP.o objects-d/mysqlWrapper.o objects-d/getTenantServer.o objects-d/getTenantServer.o
 	g++ -ggdb -lpthread -lcryptopp -lboost_thread -lmariadb -loath -std=c++14 -o glassline-websocket-d objects-d/* ./src/commandHandler/commandHandler.h -DDEBUG
 
 findFiles:
@@ -51,6 +51,9 @@ objects/mysqlWrapper.o: ./src/mysqlWrapper/mysqlWrapper.cpp
 objects/getTenants.o: ./src/commandWrapper/commands/getTenants/getTenants.cpp
 	g++ -c ./src/commandWrapper/commands/getTenants/getTenants.cpp -o objects/getTenants.o -O2
 
+objects/getTenantServer.o: ./src/commandWrapper/commands/getTenantServer/getTenantServer.cpp
+	g++ -c ./src/commandWrapper/commands/getTenantServer/getTenantServer.cpp -o objects/getTenantServer.o -O2
+
 objects-d/main.o: main.cpp
 	g++ -ggdb -c ./main.cpp -o objects-d/main-d.o -DDEBUG
 
@@ -95,6 +98,9 @@ objects-d/mysqlWrapper.o: ./src/mysqlWrapper/mysqlWrapper.cpp
 
 objects-d/getTenants.o: ./src/commandWrapper/commands/getTenants/getTenants.cpp
 	g++ -ggdb -c ./src/commandWrapper/commands/getTenants/getTenants.cpp -o objects-d/getTenants.o -DDEBUG
+
+objects-d/getTenantServer.o: ./src/commandWrapper/commands/getTenantServer/getTenantServer.cpp
+	g++ -ggdb -c ./src/commandWrapper/commands/getTenantServer/getTenantServer.cpp -o objects-d/getTenantServer.o -DDEBUG
 
 clean:
 	rm objects-d/* || true
