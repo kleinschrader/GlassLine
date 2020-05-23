@@ -31,6 +31,7 @@ mysqlWrapper::~mysqlWrapper()
     _mtex.lock();
     _mtex.unlock();
     delete _query;
+    delete [] rows;
     mysql_free_result(_result);
 }
 
@@ -75,6 +76,8 @@ void mysqlWrapper::_runQuery()
 
     numberOfFields = mysql_num_fields(_result);
     numberRows = mysql_num_rows(_result);
+
+    rows = new MYSQL_ROW[numberRows];
 
     MYSQL_FIELD *fields = mysql_fetch_fields(_result);
 

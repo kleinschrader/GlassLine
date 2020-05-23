@@ -12,5 +12,6 @@
 #include "commands/checkCredLogin/checkCredLogin.h"
 #include "commands/generateMFASecret/generateMFASecret.h"
 #include "commands/verifyOTP/verifyOTP.h"
+#include "commands/getTenants/getTenants.h"
 
 #endif

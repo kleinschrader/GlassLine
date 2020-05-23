@@ -63,6 +63,10 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
         {
             cmd = new verifyOTP;
         }
+        else if(parsedCommand == "getTenants")
+        {
+            cmd = new getTenants;
+        }
         else {
             //should the command not be recogniesed run this code
 
