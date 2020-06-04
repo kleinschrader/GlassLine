@@ -26,6 +26,8 @@ void getTenants::run(const nlohmann::json &args)
 
     auto tenants = nlohmann::json::array();
 
+    sql.await();
+
     for(int i = 0; i < sql.numberRows; i++)
     {
         auto tenant = nlohmann::json::object();

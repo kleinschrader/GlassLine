@@ -26,11 +26,11 @@ void getTenantServer::run(const nlohmann::json &args)
 
     sql.escapeStringAndFormat(tenant.c_str());
 
-
     sql.runQuery();
-
     
     auto server = nlohmann::json::array();
+
+    sql.await();
 
     for(int i = 0; i < sql.numberRows; i++)
     {

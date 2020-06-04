@@ -43,7 +43,7 @@ private:
 
     mysqlWrapperFieldHashmapObject* fieldHashmap = 0;
 
-    MYSQL_ROW *rows;
+    MYSQL_ROW *rows = 0;
 
     std::mutex _mtex;
 
@@ -62,6 +62,8 @@ public:
     void escapeStringAndFormat(const char* string);
 
     void runQuery();
+
+    void await();
 
     mysqlSubWrapper operator[](int lookup);
 

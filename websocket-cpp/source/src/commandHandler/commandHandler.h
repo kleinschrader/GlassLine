@@ -14,6 +14,8 @@ std::string handleCommand(sessionHandler* session, std::string const& command) {
     //pointer to a commandWrapper class, used to call funcktions
     commandWrapper* cmd = 0;
 
+    const std::lock_guard<std::mutex> lock(session->MYSQLLock);
+
     //try and catch, used for when invalid json data is recieved
     try 
     {

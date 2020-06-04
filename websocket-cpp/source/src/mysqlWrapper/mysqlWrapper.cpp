@@ -28,10 +28,12 @@ mysqlWrapper::mysqlWrapper(MYSQL *handle, const char* query)
 
 mysqlWrapper::~mysqlWrapper()
 {
-    _mtex.lock();
-    _mtex.unlock();
+    std::lock_guard<std::mutex> lock(_mtex);
     delete _query;
-    delete [] rows;
+    if(rows != 0)
+    {
+        delete [] rows;
+    }
     mysql_free_result(_result);
 }
 
@@ -43,7 +45,7 @@ void mysqlWrapper::runQuery()
 void mysqlWrapper::_runQuery()
 {
 
-    _mtex.lock();
+    std::lock_guard<std::mutex> lock(_mtex);
 
     if(_query == NULL)
     {
@@ -61,7 +63,6 @@ void mysqlWrapper::_runQuery()
     {
         std::cout << "SQL Query Error: " << mysql_error(_handle) << std::endl;
         bool encounterdError = true;
-        _mtex.unlock();
         return;
     }
 
@@ -69,7 +70,6 @@ void mysqlWrapper::_runQuery()
 
     if(_result == 0)
     {
-        _mtex.unlock();
         mysql_commit(_handle);
         return;
     }
@@ -97,14 +97,12 @@ void mysqlWrapper::_runQuery()
     }
 
     mysql_commit(_handle);
-
-    _mtex.unlock();
 }
 
 mysqlSubWrapper mysqlWrapper::operator[](int lookup)
 {
-    _mtex.lock();
-    _mtex.unlock();
+    std::lock_guard<std::mutex> lock(_mtex);
+
     return mysqlSubWrapper(this,lookup);
 }
 
@@ -121,11 +119,15 @@ const char* mysqlSubWrapper::operator[](const char* fieldname)
     {
         if(strcmp(fieldname, wrapper->fieldHashmap[i].fieldName) == 0)
         {
+            if(wrapper->rows[row][wrapper->fieldHashmap[i].postion]  == "")
+            {
+                std::cout << wrapper->rows[row][wrapper->fieldHashmap[i].postion] << std::endl;
+            }
             return wrapper->rows[row][wrapper->fieldHashmap[i].postion];
         }
     }
 
-    return NULL;
+    return "ERROR";
 }
 
 void mysqlWrapper::escapeStringAndFormat(const char* string)
@@ -137,4 +139,9 @@ void mysqlWrapper::escapeStringAndFormat(const char* string)
     mysql_real_escape_string(_handle,buffer,string,len);
 
     *_query = *_query % (char*)buffer;
+}
+
+void mysqlWrapper::await()
+{
+    std::lock_guard<std::mutex> lock(_mtex);
 }

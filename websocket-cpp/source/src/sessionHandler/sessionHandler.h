@@ -63,6 +63,7 @@ public:
     websocketpp::connection_hdl hdl;
 
     MYSQL* MYSQLHandle;
+    std::mutex MYSQLLock;
 };
 
 #endif

@@ -14,6 +14,11 @@ int main()
         // Initialize Asio
         websocketServer.init_asio();
 
+        
+        #ifdef DEBUG
+            websocketServer.set_reuse_addr(true);
+        #endif
+
         websocketServer.clear_access_channels(websocketpp::log::alevel::all);
 
         // Register our message handler
