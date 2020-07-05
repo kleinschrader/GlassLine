@@ -46,7 +46,7 @@ void createUser::run(const nlohmann::json &args)
     mysqlWrapper sql(session->MYSQLHandle,"INSERT INTO users \
     (userid,username,passwd,passwdSalt,tenantAdmin,tenant) \
     VALUES \
-    (UuidToBin('%1%'),'%2%','%3%','%4%',%5%,UuidToBin('%6%'))");
+    (UuidToBin('%1%'),'%2%','%3%','%4%',%5%,UuidToBin('%6%'));");
 
     sql.addFormat(uuid);
     sql.escapeStringAndFormat(username.c_str());
@@ -56,6 +56,8 @@ void createUser::run(const nlohmann::json &args)
     sql.addFormat(tenant);
 
     sql.runQuery();
+
+    sql.await();
 
     responseObject["successful"] = true;
 }

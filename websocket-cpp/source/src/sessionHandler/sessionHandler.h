@@ -1,14 +1,3 @@
-#ifndef sessionHandler_H_GUARD
-#define sessionHandler_H_GUARD
-
-#include <websocketpp/config/asio_no_tls.hpp>
-
-#include <websocketpp/server.hpp>
-
-#include <iostream>
-
-#include <mysql/mysql.h>
-
 #ifndef DEBUG
 #define DB_HOST "database"
 #define DB_USERNAME "db_user_gl"
@@ -20,6 +9,19 @@
 #define DB_PASSWORD "passwd12"
 #define DB_DATABASE "glassline"
 #endif
+
+
+#ifndef sessionHandler_H_GUARD
+#define sessionHandler_H_GUARD
+
+#include <websocketpp/config/asio_no_tls.hpp>
+
+#include <websocketpp/server.hpp>
+
+#include <iostream>
+
+#include <mysql/mysql.h>
+
 
 namespace sessionFlags
 {
@@ -38,6 +40,7 @@ struct sessionData
     std::string user_uuid = "";
     std::string tenant_uuid = "";
     std::string mfa_key = "";
+    bool keepLoggedIn = false;
 };
 
 class sessionHandler

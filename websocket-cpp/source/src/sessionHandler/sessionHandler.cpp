@@ -1,8 +1,8 @@
 #include "sessionHandler.h"
 
-#include "../commandHandler/commandHandler.h"
-
 #include "../WebSocketServer/WebSocketServer.h"
+
+#include "../commandHandler/commandHandler.h"
 
 sessionHandler::sessionHandler(websocketpp::connection_hdl newHDL)
 {
@@ -23,7 +23,9 @@ void sessionHandler::handleMessage(websocketpp::connection_hdl hdl, std::string 
 {
     session->debugOut("Recieved Message");
 
-    ((server*)s)->handleCallback(hdl, handleCommand(session,message),opcode);
+    commandHandler cmdHandler(session);
+
+    ((server*)s)->handleCallback(hdl, cmdHandler.handleCommand(message),opcode);
 }
 
 sessionHandler::~sessionHandler()

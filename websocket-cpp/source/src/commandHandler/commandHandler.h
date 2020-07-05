@@ -1,7 +1,8 @@
-#ifndef commandHandler_H_GUARD
-#define commandHandler_H_GUARD
+#ifndef DF0B6769_5610_4897_8E9B_CC72F5479ED2
+#define DF0B6769_5610_4897_8E9B_CC72F5479ED2
 
 #include <iostream>
+#include <map>
 
 #include <nlohmann/json.hpp>
 
@@ -9,127 +10,34 @@
 
 #include "../commandWrapper/commands.h"
 
-std::string handleCommand(sessionHandler* session, std::string const& command) {
+typedef commandWrapper*(*__CreateInstance)();
+
+class commandHandler
+{
+public:
+    commandHandler(sessionHandler *currentSession);
+
+    std::string handleCommand(std::string const& command);
+private:
+    void createMap();
+
+    sessionHandler* session;
+
     
-    //pointer to a commandWrapper class, used to call funcktions
-    commandWrapper* cmd = 0;
+    std::map<std::string,__CreateInstance> commandMap;
 
-    const std::lock_guard<std::mutex> lock(session->MYSQLLock);
-
-    //try and catch, used for when invalid json data is recieved
-    try 
-    {
-        //parse the message from the client
-        nlohmann::json commandData = nlohmann::json::parse(command);
-        //prepare a response json object (only used if normal command parsing fails)
-        nlohmann::json response;
-
-        //get the command of the request
-        std::string parsedCommand = commandData["cmd"];
-
-        //create a fitting class based on the command of the client
-        //! 2020-05-19: There has to be a better way than this...
-        if(parsedCommand == "getSetupRequired")
-        {
-            cmd = new getSetupRequired;
-        }
-        else if(parsedCommand == "checkSetupToken")
-        {
-            cmd = new checkSetupToken;
-        }
-        else if(parsedCommand == "checkTokenLogin")
-        {
-            cmd = new checkTokenLogin;
-        }
-        else if(parsedCommand == "checkCredLogin")
-        {
-            cmd = new checkCredLogin;
-        }
-        else if(parsedCommand == "createTenant")
-        {
-            cmd = new createTenant;
-        }
-        else if(parsedCommand == "createUser")
-        {
-            cmd = new createUser;
-        }
-        else if(parsedCommand == "finishSetup")
-        {
-            cmd = new finishSetup;
-        }
-        else if(parsedCommand == "generateMFASecret")
-        {
-            cmd = new generateMFASecret;
-        }
-        else if(parsedCommand == "verifyOTP")
-        {
-            cmd = new verifyOTP;
-        }
-        else if(parsedCommand == "getTenants")
-        {
-            cmd = new getTenants;
-        }
-        else if(parsedCommand == "getTenantServer")
-        {
-            cmd = new getTenantServer;
-        }
-        else if(parsedCommand == "getAllServers")
-        {
-            cmd = new getAllServers;
-        }
-        else {
-            //should the command not be recogniesed run this code
-
-            //set successful to false and write unknown comannd to error description
-            response["successful"] = false;
-            response["error"] = "Unknown Command";
-
-            //on failure we should still send the sequence
-            response["seq"] = (int)commandData["seq"];
-
-            session->debugOut("Issued unknown command");
-
-            //convert the respone object to a json string and returnit
-            return response.dump();
-        }
-
-        //store the sequence in the new object 
-        cmd->setSequence(commandData["seq"]);
-
-        //pass through the session pointer
-        cmd->session = session;
-        
-        //Attempt code execution 
-        cmd->run(commandData);
-
-        //get the json string from the cmd object
-        std::string jsonString = cmd->getJSONString();
-
-        //free the used memory and return the response object
-        delete cmd;
-
-        return jsonString;
-    }
-    catch(nlohmann::json::exception& e)
-    {
-        //this usually gets called if parsing of the json string fails or no sequence object is provided
-
-        //only delete the cmd object if it is set
-        if(cmd != 0)
-        {
-            delete cmd;
-        }
-        
-        session->debugOut("Issued malformed command");
-
-        //set successful to false and write unknown comannd to error description
-        nlohmann::json response;
-        response["successful"] = false;
-        response["error"] = "Malformed Command";
-
-        //return the response object
-        return response.dump();
-    }
-} 
-
-#endif
+    //Create new Instance of each
+    static commandWrapper* CreateInstance_checkCredLogin();
+    static commandWrapper* CreateInstance_checkSetupToken();
+    static commandWrapper* CreateInstance_checkTokenLogin();
+    static commandWrapper* CreateInstance_createTenant();
+    static commandWrapper* CreateInstance_createUser();
+    static commandWrapper* CreateInstance_finishSetup();
+    static commandWrapper* CreateInstance_generateMFASecret();
+    static commandWrapper* CreateInstance_getAllServers();
+    static commandWrapper* CreateInstance_getSetupRequired();
+    static commandWrapper* CreateInstance_getTenants();
+    static commandWrapper* CreateInstance_getTenantServer();
+    static commandWrapper* CreateInstance_verifyOTP();
+};
+#endif /* DF0B6769_5610_4897_8E9B_CC72F5479ED2 */

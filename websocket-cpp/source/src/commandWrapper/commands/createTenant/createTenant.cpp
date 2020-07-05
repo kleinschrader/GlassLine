@@ -23,4 +23,6 @@ void createTenant::run(const nlohmann::json &args)
     sql.addFormat(useMFA);
 
     sql.runQuery();
+
+    sql.await();
 }

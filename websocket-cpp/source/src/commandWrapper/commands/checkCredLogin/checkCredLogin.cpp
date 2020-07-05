@@ -81,4 +81,5 @@ void checkCredLogin::run(const nlohmann::json &args)
     
 
     responseObject["successful"] = true;
-}
+
+};

@@ -1,3 +1,5 @@
+#ifndef C0CEF47D_EFE4_4D62_A153_9FD04FAAFEFD
+#define C0CEF47D_EFE4_4D62_A153_9FD04FAAFEFD
 #include "../../commandWrapper.h"
 
 class checkSetupToken : public commandWrapper
@@ -15,3 +17,4 @@ public:
     */
     void run(const nlohmann::json &args);
 };
+#endif /* C0CEF47D_EFE4_4D62_A153_9FD04FAAFEFD */

@@ -45,6 +45,10 @@ void mysqlWrapper::runQuery()
 void mysqlWrapper::_runQuery()
 {
 
+    #ifdef DEBUG
+    std::cout << "[DEBUG] QUERY RUN: " << boost::str(*_query) << std::endl;
+    #endif
+
     std::lock_guard<std::mutex> lock(_mtex);
 
     if(_query == NULL)

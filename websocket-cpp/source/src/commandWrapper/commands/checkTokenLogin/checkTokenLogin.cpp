@@ -55,4 +55,3 @@ void checkTokenLogin::run(const nlohmann::json &args)
     responseObject["mfa"] = "none";
     mysql_free_result(result);
 };
-

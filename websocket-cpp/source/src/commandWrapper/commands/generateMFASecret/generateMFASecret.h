@@ -1,3 +1,5 @@
+#ifndef B394E942_68AC_49E8_899B_901946F05283
+#define B394E942_68AC_49E8_899B_901946F05283
 #include "../../commandWrapper.h"
 
 class generateMFASecret : public commandWrapper
@@ -18,3 +20,4 @@ public:
     void convertToHexString(const char* in, unsigned int length, char* out);
 };
 
+#endif /* B394E942_68AC_49E8_899B_901946F05283 */

@@ -7,6 +7,7 @@
 
 #include <stdlib.h>    
 
+//#include "../sessionHandler/sessionHandler.h"
 #include "../sessionHandler/sessionHandler.h"
 
 #include <boost/uuid/uuid.hpp>
@@ -23,6 +24,7 @@
 #include <liboath/oath.h>
 
 #include "../mysqlWrapper/mysqlWrapper.h"
+
 
 class commandWrapper
 {
