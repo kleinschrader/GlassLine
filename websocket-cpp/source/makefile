@@ -1,7 +1,7 @@
 release: objects/main.o objects/WebSocketServer.o objects/sessionHandler.o objects/commandWrapper.o objects/getSetupRequired.o objects/checkSetupToken.o objects/checkTokenLogin.o objects/createTenant.o objects/createUser.o objects/finishSetup.o objects/checkCredLogin.o objects/generateMFASecret.o objects/verifyOTP.o objects/mysqlWrapper.o objects/getTenants.o objects/getTenantServer.o objects/getAllServers.o object/commandHandler.o
-	g++ -lpthread -lcryptopp -lboost_thread -lmariadb -loath -std=c++14 -o glassline-websocket objects/* -O2 
+	g++ -lpthread -lcryptopp -lboost_thread -lboost_regex -lmariadb -loath -std=c++14 -o glassline-websocket objects/* -O2 
 debug: objects-d/main.o objects-d/WebSocketServer.o objects-d/sessionHandler.o objects-d/commandWrapper.o objects-d/getSetupRequired.o objects-d/checkSetupToken.o objects-d/checkTokenLogin.o objects-d/createTenant.o objects-d/createUser.o objects-d/finishSetup.o objects-d/checkCredLogin.o objects-d/generateMFASecret.o objects-d/verifyOTP.o objects-d/mysqlWrapper.o objects-d/getTenants.o objects-d/getTenantServer.o objects-d/getTenantServer.o objects-d/getAllServers.o object-d/commandHandler.o
-	g++ -ggdb -lpthread -lcryptopp -lboost_thread -lmariadb -loath -std=c++14 -o glassline-websocket-d objects-d/* -DDEBUG
+	g++ -ggdb -lpthread -lcryptopp -lboost_thread -lboost_regex -lmariadb -loath -std=c++14 -o glassline-websocket-d objects-d/* -DDEBUG
 
 findFiles:
 	find ./ -name '*.cpp'

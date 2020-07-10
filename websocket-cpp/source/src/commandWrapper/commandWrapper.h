@@ -15,6 +15,7 @@
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/format.hpp>
+#include <boost/regex.hpp>
 
 #include <chrono>
 
@@ -79,11 +80,20 @@ public:
     virtual void run(const nlohmann::json &args) = 0;
 
     /**
-     * Generate a valid randmo uuid
+     * Generate a valid random uuid
      * 
      * @returns the uuid as string
     */
     std::string genUUID();
+
+    /**
+     * Verify if a uuid has a valid syntax
+     * 
+     * @param uuid a reference to the uuid to be varified
+     * 
+     * @returns true if valid syntax | false if not
+    */
+    bool verifyUUID(std::string &uuid);
 
     /**
      * Hash a password with a salt

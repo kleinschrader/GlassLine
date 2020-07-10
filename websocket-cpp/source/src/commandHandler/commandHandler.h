@@ -16,15 +16,13 @@ class commandHandler
 {
 public:
     commandHandler(sessionHandler *currentSession);
+    ~commandHandler();
 
     std::string handleCommand(std::string const& command);
 private:
-    void createMap();
+    bool createMap(std::map<std::string,__CreateInstance> *commandMap);
 
     sessionHandler* session;
-
-    
-    std::map<std::string,__CreateInstance> commandMap;
 
     //Create new Instance of each
     static commandWrapper* CreateInstance_checkCredLogin();

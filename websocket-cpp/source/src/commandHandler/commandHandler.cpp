@@ -1,13 +1,24 @@
 #include "commandHandler.h"
 
+
+
 commandHandler::commandHandler(sessionHandler *currentSession)
 {
     session = currentSession;
-
-    createMap();
 };
 
+commandHandler::~commandHandler()
+{
+    // RANT:
+    // For whatever fucking reason the programm crashes when no destructor is set as it tries to delete the static std::map in commandHandler::Handle Command.
+    // I don't know why it does that
+}
+
 std::string commandHandler::handleCommand(std::string const& command) { 
+    
+    static std::map<std::string,__CreateInstance> commandMap;
+    static bool mapRumapBuildOnce = createMap(&commandMap);
+
     //pointer to a commandWrapper class, used to call funcktions
     commandWrapper* cmd = 0;
 
@@ -87,20 +98,22 @@ std::string commandHandler::handleCommand(std::string const& command) {
     }
 } 
 
-void commandHandler::createMap()
+bool commandHandler::createMap(std::map<std::string,__CreateInstance> *commandMap)
 {
-    commandMap.insert(std::make_pair("checkCredLogin",(__CreateInstance)CreateInstance_checkCredLogin));
-    commandMap.insert(std::make_pair("checkSetupToken",(__CreateInstance)CreateInstance_checkSetupToken));
-    commandMap.insert(std::make_pair("checkTokenLogin",(__CreateInstance)CreateInstance_checkTokenLogin));
-    commandMap.insert(std::make_pair("createTenant",(__CreateInstance)CreateInstance_createTenant));
-    commandMap.insert(std::make_pair("createUser",(__CreateInstance)CreateInstance_createUser));
-    commandMap.insert(std::make_pair("finishSetup",(__CreateInstance)CreateInstance_finishSetup));
-    commandMap.insert(std::make_pair("generateMFASecret",(__CreateInstance)CreateInstance_generateMFASecret));
-    commandMap.insert(std::make_pair("getAllServers",(__CreateInstance)CreateInstance_getAllServers));
-    commandMap.insert(std::make_pair("getSetupRequired",(__CreateInstance)CreateInstance_getSetupRequired));
-    commandMap.insert(std::make_pair("getTenants",(__CreateInstance)CreateInstance_getTenants));
-    commandMap.insert(std::make_pair("getTenantServer",(__CreateInstance)CreateInstance_getTenantServer));
-    commandMap.insert(std::make_pair("verifyOTP",(__CreateInstance)CreateInstance_verifyOTP));
+    commandMap->insert(std::make_pair("checkCredLogin",(__CreateInstance)CreateInstance_checkCredLogin));
+    commandMap->insert(std::make_pair("checkSetupToken",(__CreateInstance)CreateInstance_checkSetupToken));
+    commandMap->insert(std::make_pair("checkTokenLogin",(__CreateInstance)CreateInstance_checkTokenLogin));
+    commandMap->insert(std::make_pair("createTenant",(__CreateInstance)CreateInstance_createTenant));
+    commandMap->insert(std::make_pair("createUser",(__CreateInstance)CreateInstance_createUser));
+    commandMap->insert(std::make_pair("finishSetup",(__CreateInstance)CreateInstance_finishSetup));
+    commandMap->insert(std::make_pair("generateMFASecret",(__CreateInstance)CreateInstance_generateMFASecret));
+    commandMap->insert(std::make_pair("getAllServers",(__CreateInstance)CreateInstance_getAllServers));
+    commandMap->insert(std::make_pair("getSetupRequired",(__CreateInstance)CreateInstance_getSetupRequired));
+    commandMap->insert(std::make_pair("getTenants",(__CreateInstance)CreateInstance_getTenants));
+    commandMap->insert(std::make_pair("getTenantServer",(__CreateInstance)CreateInstance_getTenantServer));
+    commandMap->insert(std::make_pair("verifyOTP",(__CreateInstance)CreateInstance_verifyOTP));
+
+    return true;
 }
 
 commandWrapper* commandHandler::CreateInstance_checkCredLogin(){

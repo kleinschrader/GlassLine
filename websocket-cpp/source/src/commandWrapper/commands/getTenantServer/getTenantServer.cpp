@@ -22,7 +22,7 @@ void getTenantServer::run(const nlohmann::json &args)
         return;
     }
 
-    mysqlWrapper sql(session->MYSQLHandle,"SELECT UuidFromBin(serverid) AS serverid, servername FROM servers WHERE tenant = (UuidToBin(%1%))");
+    mysqlWrapper sql(session->MYSQLHandle,"SELECT UuidFromBin(serverid) AS serverid, servername FROM servers WHERE tenant = (UuidToBin('%1%'))");
 
     sql.escapeStringAndFormat(tenant.c_str());
 

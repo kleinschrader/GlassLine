@@ -62,6 +62,19 @@ std::string commandWrapper::genUUID()
     return boost::uuids::to_string(boost::uuids::random_generator()());
 }
 
+ bool commandWrapper::verifyUUID(std::string &uuid)
+ {
+    //initialise the uuid regex
+    //as the regex never changes we dont need to recompile it everytime so static is perfect here
+    static boost::regex uuidRE{"^[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}$"};
+
+
+    // 2020-07-10: Actually i see a lot of conflicting information regarding the use of static variables so im not sure i should keep it. For now it does it's job.
+
+    //match and return :)
+    return boost::regex_match(uuid,uuidRE);
+ }
+
 std::string commandWrapper::hashPassord(const std::string &password, const std::string &salt)
 {
     std::string postSaltPasswort = password + salt;
