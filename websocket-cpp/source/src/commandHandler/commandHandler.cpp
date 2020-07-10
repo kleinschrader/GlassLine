@@ -112,6 +112,7 @@ bool commandHandler::createMap(std::map<std::string,__CreateInstance> *commandMa
     commandMap->insert(std::make_pair("getTenants",(__CreateInstance)CreateInstance_getTenants));
     commandMap->insert(std::make_pair("getTenantServer",(__CreateInstance)CreateInstance_getTenantServer));
     commandMap->insert(std::make_pair("verifyOTP",(__CreateInstance)CreateInstance_verifyOTP));
+    commandMap->insert(std::make_pair("createServer",(__CreateInstance)CreateInstance_createServer));
 
     return true;
 }
@@ -152,3 +153,7 @@ commandWrapper* commandHandler::CreateInstance_getTenantServer(){
 commandWrapper* commandHandler::CreateInstance_verifyOTP(){
     return new verifyOTP;
 }
+commandWrapper* commandHandler::CreateInstance_createServer(){
+    return new createServer;
+}
+

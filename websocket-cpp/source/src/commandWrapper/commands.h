@@ -15,5 +15,6 @@
 #include "commands/getTenants/getTenants.h"
 #include "commands/getTenantServer/getTenantServer.h"
 #include "commands/getAllServers/getAllServers.h"
+#include "commands/createServer/createServer.h"
 
 #endif

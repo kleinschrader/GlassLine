@@ -37,5 +37,6 @@ private:
     static commandWrapper* CreateInstance_getTenants();
     static commandWrapper* CreateInstance_getTenantServer();
     static commandWrapper* CreateInstance_verifyOTP();
+    static commandWrapper* CreateInstance_createServer();
 };
 #endif /* DF0B6769_5610_4897_8E9B_CC72F5479ED2 */

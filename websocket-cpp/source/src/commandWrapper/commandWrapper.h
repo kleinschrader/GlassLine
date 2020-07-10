@@ -16,6 +16,8 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/format.hpp>
 #include <boost/regex.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 #include <chrono>
 
@@ -94,6 +96,16 @@ public:
      * @returns true if valid syntax | false if not
     */
     bool verifyUUID(std::string &uuid);
+
+    /**
+     * Generate a random string 
+     * 
+     * @param length the length of the string to build
+     * @param charset a pointer to std::string of caracters to use, alternativly leave empty to use : "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+     * 
+     * @returns the final random string
+    */
+    std::string generateRandomString(u_int16_t length, const std::string * charset = nullptr);
 
     /**
      * Hash a password with a salt

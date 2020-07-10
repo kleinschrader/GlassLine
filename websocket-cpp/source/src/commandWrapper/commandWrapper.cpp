@@ -62,8 +62,8 @@ std::string commandWrapper::genUUID()
     return boost::uuids::to_string(boost::uuids::random_generator()());
 }
 
- bool commandWrapper::verifyUUID(std::string &uuid)
- {
+bool commandWrapper::verifyUUID(std::string &uuid)
+{
     //initialise the uuid regex
     //as the regex never changes we dont need to recompile it everytime so static is perfect here
     static boost::regex uuidRE{"^[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}$"};
@@ -73,6 +73,37 @@ std::string commandWrapper::genUUID()
 
     //match and return :)
     return boost::regex_match(uuid,uuidRE);
+}
+
+ std::string commandWrapper::generateRandomString(u_int16_t length, const std::string * charset)
+ {
+    const std::string defaultCharset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    const std::string * charsetToUse;
+
+    if(charset == nullptr)
+    {
+        charsetToUse = &defaultCharset;
+    }
+    else
+    {
+        charsetToUse = charset;
+    }
+
+    static boost::random::mt19937 gen;
+    std::chrono::milliseconds ms = std::chrono::duration_cast< std::chrono::milliseconds  >(std::chrono::system_clock::now().time_since_epoch());
+    gen.seed(ms.count());
+
+    boost::random::uniform_int_distribution<> dist(0, charsetToUse->length() - 1);
+
+    std::stringstream buffer;
+
+    for(int i = 0; i < length; i++)
+    {    
+        buffer << charsetToUse->at(dist(gen));
+    }
+    
+    return buffer.str();
  }
 
 std::string commandWrapper::hashPassord(const std::string &password, const std::string &salt)

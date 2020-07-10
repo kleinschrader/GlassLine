@@ -30,12 +30,14 @@ void createServer::run(const nlohmann::json &args)
         return;
     }
 
-    mysqlWrapper sql(session->MYSQLHandle,"INSERT INTO servers('serverid','servername','accessToken','childOf','tenant') VALUES (UuidToBin(UUID()), '%1%', '%2%', '%3%', '%4%')");
+    mysqlWrapper sql(session->MYSQLHandle,"INSERT INTO servers(serverid,servername,accessToken,childOf,tenant) VALUES (UuidToBin('%1%'), '%2%', '%3%', UuidToBin('%4%'), UuidToBin('%5%'))");
+
+    std::string uuid = genUUID();
+    sql.addFormat(uuid);
 
     sql.escapeStringAndFormat(servername.c_str());
 
-    //Generate a token here
-    sql.addFormat("");
+    sql.addFormat(generateRandomString(64));
 
     sql.addFormat(parent);
     
@@ -46,4 +48,5 @@ void createServer::run(const nlohmann::json &args)
     sql.await();
 
     responseObject["successful"] = true;
-}
+    responseObject["uuid"] = uuid;
+};
