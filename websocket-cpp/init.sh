@@ -25,8 +25,8 @@ rm -rf /tmp/websocketpp
 # go into the build directory of websocket-cpp
 cd /tmp/glassline-websocket
 
-# compile it
-make
+# compile it using 4 cores
+make -j 4
 
 #create the final directory
 mkdir /usr/app

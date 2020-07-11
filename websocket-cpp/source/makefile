@@ -12,7 +12,7 @@ objects/main.o: main.cpp
 objects/WebSocketServer.o: ./src/WebSocketServer/WebSocketServer.cpp
 	g++ -c ./src/WebSocketServer/WebSocketServer.cpp -o objects/WebSocketServer.o -O2
 
-objects/sessionHandler.o: ./src/sessionHandler/sessionHandler.cpp objects/sessionHandler.o
+objects/sessionHandler.o: ./src/sessionHandler/sessionHandler.cpp
 	g++ -c ./src/sessionHandler/sessionHandler.cpp -o objects/sessionHandler.o -O2
 
 object/commandHandler.o: ./src/commandHandler/commandHandler.cpp
@@ -42,7 +42,7 @@ objects/finishSetup.o: ./src/commandWrapper/commands/finishSetup/finishSetup.cpp
 objects/checkCredLogin.o: ./src/commandWrapper/commands/checkCredLogin/checkCredLogin.cpp
 	g++ -c ./src/commandWrapper/commands/checkCredLogin/checkCredLogin.cpp -o objects/checkCredLogin.o -O2
 
-objects/generateMFASecret.o: ./src/commandWrapper/commands/checkCredLogin/generateMFASecret.cpp
+objects/generateMFASecret.o: ./src/commandWrapper/commands/generateMFASecret/generateMFASecret.cpp
 	g++ -c ./src/commandWrapper/commands/generateMFASecret/generateMFASecret.cpp -o objects/generateMFASecret.o -O2
 
 objects/verifyOTP.o: ./src/commandWrapper/commands/verifyOTP/verifyOTP.cpp

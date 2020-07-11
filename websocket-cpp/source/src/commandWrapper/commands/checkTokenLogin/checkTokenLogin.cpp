@@ -15,43 +15,41 @@ void checkTokenLogin::run(const nlohmann::json &args)
         return;
     }
 
-    mysql_query(
-        session->MYSQLHandle,
-        "SELECT UuidFromBin(userid), DATEDIFF(resumeSessionCodeSpoil, DATE()), UuidFromBin(tenant), tenants.globalAdmin \
+    mysqlWrapper sql(session->MYSQLHandle,"SELECT UuidFromBin(userid) AS userUUID, (DATEDIFF(resumeSessionCodeSpoil, DATE())) AS dateDiffrence, UuidFromBin(tenant) AS tenantUUID, tenants.globalAdmin AS globalAdmin \
         FROM users \
         LEFT JOIN tenants \
         ON users.tenant = tenants.tenantid \
-        WHERE resumeSessionCode = ?"
-    );
+        WHERE resumeSessionCode = '%1%'");
 
-    MYSQL_RES *result = mysql_store_result(session->MYSQLHandle);
+
+
+    sql.escapeStringAndFormat(token.c_str());
    
-    if(mysql_num_rows(result) != 1)
+    sql.runQuery();
+
+    sql.await();
+
+    if(sql.numberRows != 1)
     {
         setFailure("Token Invalid");
-        mysql_free_result(result);
         return;
     }
 
-    MYSQL_ROW row;
-    row = mysql_fetch_row(result);
 
-    if(atoi(row[1]) < 0)
+    if(atoi(sql[0]["dateDiffrence"]) < 0)
     {
         setFailure("Token Expired");
-        mysql_free_result(result);
         return;
     }
 
-    refreshLoginToken(row[0]);
+    refreshLoginToken(sql[0]["userUUID"]);
 
-    session->sessionInfo.user_uuid = row[0];
-    session->sessionInfo.tenant_uuid = row[2];
+    session->sessionInfo.user_uuid = sql[0]["userUUID"];
+    session->sessionInfo.tenant_uuid = sql[0]["tenantUUID"];
 
-    session->setFlag(sessionFlags::FLAG_ADMIN_TENANT,(atoi(row[3]) != 0));
+    session->setFlag(sessionFlags::FLAG_ADMIN_TENANT,(atoi(sql[0]["globalAdmin"]) != 0));
     session->setFlag(sessionFlags::FLAG_USER_LOGGED_ON,true);
 
     responseObject["successful"] = true;
     responseObject["mfa"] = "none";
-    mysql_free_result(result);
 };

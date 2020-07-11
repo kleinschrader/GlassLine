@@ -67,7 +67,7 @@ CREATE TABLE users(
   tenantAdmin bool,
   resumeSessionCode varchar(128),
   resumeSessionCodeSpoil date,
-  tenant BINARY(32),
+  tenant BINARY(16),
   mfakey varchar(32)
 );
 
